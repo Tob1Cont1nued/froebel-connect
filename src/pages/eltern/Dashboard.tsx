@@ -8,11 +8,15 @@ import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { mockUsers, currentChild, appointments } from '../../mockData';
+import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useChildren } from '../../hooks/useChildren';
+import { useAppointments } from '../../hooks/useAppointments';
+import { useAbsences } from '../../hooks/useAbsences';
 
 const appointmentColors = {
   event: '#1565C0', closure: '#C62828', meeting: '#2E7D32', info: '#E65100',
@@ -23,111 +27,123 @@ const appointmentLabels = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const user = mockUsers.eltern;
+  const { profile } = useAuth();
   const { conversations } = useApp();
+  const { children, loading: childLoading } = useChildren();
+  const { appointments, loading: aptLoading } = useAppointments();
+  const { absences } = useAbsences();
+
   const today = new Date();
   const greeting = today.getHours() < 12 ? 'Guten Morgen' : today.getHours() < 17 ? 'Guten Tag' : 'Guten Abend';
+  const firstName = profile?.name?.split(' ')[0] ?? '';
 
-  const nextAppointments = [...appointments]
-    .filter((a) => a.date >= today)
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .slice(0, 4);
-
+  const nextAppointments = appointments.filter((a) => a.date >= today).slice(0, 4);
+  const todayStr = today.toISOString().split('T')[0];
+  const activeAbsences = absences.filter((a) => a.to >= today || a.from.toISOString().split('T')[0] >= todayStr);
   const unreadConversations = conversations.filter((c) => c.unread > 0);
+
+  if (childLoading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 6 }}>
+      <CircularProgress />
+    </Box>
+  );
 
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 1100 }, mx: 'auto', width: '100%' }}>
-      {/* Hero card — full width */}
+      {/* Hero */}
       <Card sx={{ mb: 2.5, background: 'linear-gradient(135deg, #1A3545 0%, #2D5468 100%)', color: 'white' }}>
         <CardContent sx={{ pb: '16px !important' }}>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>{greeting},</Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>{user.name.split(' ')[0]} 👋</Typography>
-          <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ fontSize: 36 }}>{currentChild.emoji}</Box>
-            <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{currentChild.name}</Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                {currentChild.kita}
-              </Typography>
-            </Box>
-            <Chip
-              label="Anwesend"
-              size="small"
-              sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }}
-            />
-          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>{firstName} 👋</Typography>
+          {children.length > 0 && (
+            <>
+              <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {children.map((child, i) => (
+                  <Box key={child.id}>
+                    {i > 0 && <Divider sx={{ mb: 1, borderColor: 'rgba(255,255,255,0.1)' }} />}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ fontSize: 32 }}>{child.emoji}</Box>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{child.name}</Typography>
+                        {child.kita_name && <Typography variant="body2" sx={{ opacity: 0.8 }}>{child.kita_name}</Typography>}
+                      </Box>
+                      <Chip label="Anwesend" size="small" sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }} />
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </>
+          )}
         </CardContent>
       </Card>
 
-      {/* 2-column on desktop */}
       <Grid container spacing={2.5}>
-        {/* Left column */}
+        {/* Linke Spalte */}
         <Grid size={{ xs: 12, md: 7 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, px: 0.5 }}>
-            Schnellzugriff
-          </Typography>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, px: 0.5 }}>Schnellzugriff</Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2.5 }}>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<EventBusyIcon />}
-              onClick={() => navigate('/eltern/abwesenheit')}
-              sx={{
-                py: 1.5,
-                borderRadius: 3,
-                bgcolor: '#95C11F',
-                color: '#1A3545',
-                '&:hover': { bgcolor: '#6B8A15', color: 'white' },
-              }}
-            >
+            <Button variant="contained" size="large" startIcon={<EventBusyIcon />} onClick={() => navigate('/eltern/abwesenheit')}
+              sx={{ py: 1.5, borderRadius: 3, bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' } }}>
               Abwesenheit melden
             </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              startIcon={<ChatBubbleOutlinedIcon />}
-              onClick={() => navigate('/eltern/nachrichten')}
-              sx={{ py: 1.5, borderRadius: 3 }}
-            >
+            <Button variant="outlined" size="large" startIcon={<ChatBubbleOutlinedIcon />} onClick={() => navigate('/eltern/nachrichten')}
+              sx={{ py: 1.5, borderRadius: 3 }}>
               Nachricht senden
             </Button>
           </Box>
+
+          {activeAbsences.length > 0 && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent sx={{ pb: '8px !important' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    <EventBusyIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle', color: '#E65100' }} />
+                    Gemeldete Abwesenheiten
+                  </Typography>
+                  <Button size="small" endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />} onClick={() => navigate('/eltern/abwesenheit')}>Alle</Button>
+                </Box>
+                {activeAbsences.slice(0, 3).map((a, i) => (
+                  <Box key={a.id}>
+                    {i > 0 && <Divider sx={{ my: 0.5 }} />}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, px: 1, borderRadius: 2 }}>
+                      <Box sx={{ fontSize: 20 }}>{a.childEmoji ?? '👶'}</Box>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {a.childName ?? ''} · {a.reason}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {a.from.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })}
+                          {a.from.toDateString() !== a.to.toDateString() && ` – ${a.to.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })}`}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={a.status === 'confirmed' ? 'Bestätigt' : 'Ausstehend'}
+                        size="small"
+                        color={a.status === 'confirmed' ? 'success' : 'warning'}
+                        variant={a.status === 'confirmed' ? 'filled' : 'outlined'}
+                      />
+                    </Box>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {unreadConversations.length > 0 && (
             <Card>
               <CardContent sx={{ pb: '8px !important' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>💬 Neue Nachrichten</Typography>
-                  <Button
-                    size="small"
-                    endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />}
-                    onClick={() => navigate('/eltern/nachrichten')}
-                  >
-                    Alle
-                  </Button>
+                  <Button size="small" endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />} onClick={() => navigate('/eltern/nachrichten')}>Alle</Button>
                 </Box>
                 {unreadConversations.map((conv) => (
-                  <Box
-                    key={conv.id}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                      cursor: 'pointer',
-                      borderRadius: 2,
-                      px: 1,
-                      py: 0.75,
-                      '&:hover': { bgcolor: 'action.hover' },
-                    }}
-                    onClick={() => navigate(`/eltern/nachrichten/${conv.id}`)}
-                  >
+                  <Box key={conv.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', borderRadius: 2, px: 1, py: 0.75, '&:hover': { bgcolor: 'action.hover' } }}
+                    onClick={() => navigate(`/eltern/nachrichten/${conv.id}`)}>
                     <Avatar sx={{ bgcolor: '#1A3545', width: 36, height: 36, fontSize: 14 }}>{conv.avatar}</Avatar>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>{conv.from}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }} noWrap>
-                        {conv.preview}
-                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }} noWrap>{conv.preview}</Typography>
                     </Box>
                     <Chip label={conv.unread} size="small" color="error" />
                   </Box>
@@ -137,44 +153,31 @@ export default function Dashboard() {
           )}
         </Grid>
 
-        {/* Right column — Appointments */}
+        {/* Rechte Spalte */}
         <Grid size={{ xs: 12, md: 5 }}>
+          <Box sx={{ height: 20, mb: 1 }} /> {/* Platzhalter für "Schnellzugriff"-Label */}
           <Card>
             <CardContent sx={{ pb: '8px !important' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>📅 Nächste Termine</Typography>
-                <Button
-                  size="small"
-                  endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />}
-                  onClick={() => navigate('/eltern/termine')}
-                >
-                  Alle
-                </Button>
+                <Button size="small" endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />} onClick={() => navigate('/eltern/termine')}>Alle</Button>
               </Box>
-              {nextAppointments.map((apt, i) => (
+              {aptLoading ? <CircularProgress size={20} sx={{ m: 1 }} /> : nextAppointments.length === 0 ? (
+                <Typography variant="body2" color="text.disabled" sx={{ py: 1, px: 1 }}>Keine bevorstehenden Termine.</Typography>
+              ) : nextAppointments.map((apt, i) => (
                 <Box key={apt.id}>
                   {i > 0 && <Divider sx={{ my: 0.5 }} />}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, px: 1, borderRadius: 2 }}>
-                    <Box
-                      sx={{ width: 4, height: 36, borderRadius: 2, bgcolor: appointmentColors[apt.type], flexShrink: 0 }}
-                    />
+                    <Box sx={{ width: 4, height: 36, borderRadius: 2, bgcolor: appointmentColors[apt.type], flexShrink: 0 }} />
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>{apt.title}</Typography>
                       <Typography variant="caption" color="text.secondary">
                         {apt.date.toLocaleDateString('de-DE', { day: '2-digit', month: 'long' })}
-                        {apt.time ? ' · ' + apt.time : ''}
+                        {apt.time ? ` · ${apt.time}` : ''}
                       </Typography>
                     </Box>
-                    <Chip
-                      label={appointmentLabels[apt.type]}
-                      size="small"
-                      sx={{
-                        bgcolor: appointmentColors[apt.type] + '20',
-                        color: appointmentColors[apt.type],
-                        fontWeight: 600,
-                        fontSize: 10,
-                      }}
-                    />
+                    <Chip label={appointmentLabels[apt.type]} size="small"
+                      sx={{ bgcolor: appointmentColors[apt.type] + '20', color: appointmentColors[apt.type], fontWeight: 600, fontSize: 10 }} />
                   </Box>
                 </Box>
               ))}

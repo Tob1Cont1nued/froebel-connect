@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -19,7 +20,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { mockUsers, currentChild, documents } from '../../mockData';
+import { useChildren } from '../../hooks/useChildren';
+import { useDocuments } from '../../hooks/useDocuments';
 
 interface MenuItem {
   icon: React.ReactNode;
@@ -32,14 +34,18 @@ interface MenuItem {
 
 export default function Mehr() {
   const navigate = useNavigate();
-  const user = mockUsers.eltern;
+  const { profile, signOut } = useAuth();
+  const { firstChild } = useChildren();
+  const { documents } = useDocuments();
+
+  const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   const sections: { title: string; items: MenuItem[] }[] = [
     {
       title: 'Funktionen',
       items: [
         { icon: <EventBusyIcon color="secondary" />, label: 'Abwesenheit melden', desc: 'Kind für einen Tag abmelden', action: () => navigate('/eltern/abwesenheit') },
-        { icon: <DescriptionOutlinedIcon color="primary" />, label: 'Dokumente', desc: `${documents.length} Dokumente verfügbar`, badge: String(documents.length), action: () => navigate('/eltern/dokumente') },
+        { icon: <DescriptionOutlinedIcon color="primary" />, label: 'Dokumente', desc: `${documents.length} Dokumente verfügbar`, badge: documents.length > 0 ? String(documents.length) : undefined, action: () => navigate('/eltern/dokumente') },
         { icon: <AssignmentOutlinedIcon color="primary" />, label: 'Digitale Formulare', desc: 'Einwilligungen, Anmeldungen', action: () => {} },
       ],
     },
@@ -48,31 +54,28 @@ export default function Mehr() {
       items: [
         { icon: <LanguageIcon />, label: 'Sprache', desc: 'Deutsch (DE) · 29 weitere verfügbar', action: () => {} },
         { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => {} },
-        { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: user.email, action: () => {} },
-        { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: '2FA aktiviert · DSGVO-konform', action: () => {} },
+        { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: profile?.email ?? '', action: () => {} },
+        { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => {} },
       ],
     },
     {
       title: 'Hilfe',
       items: [
         { icon: <HelpOutlinedIcon />, label: 'Hilfe & Support', desc: 'FAQ, Kontakt zum Kita-Team', action: () => {} },
-        { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: () => navigate('/login') },
+        { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: async () => { await signOut(); navigate('/login'); } },
       ],
     },
   ];
 
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 900 }, mx: 'auto', width: '100%' }}>
-      {/* User card */}
       <Card sx={{ mb: 3, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Avatar sx={{ width: 56, height: 56, bgcolor: '#1A3545', fontSize: 20, fontWeight: 700 }}>
-          {user.avatar}
-        </Avatar>
+        <Avatar sx={{ width: 56, height: 56, bgcolor: '#1A3545', fontSize: 20, fontWeight: 700 }}>{avatarInitials}</Avatar>
         <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{user.name}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {currentChild.emoji} Elternteil von {currentChild.name}
-          </Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{profile?.name ?? ''}</Typography>
+          {firstChild && (
+            <Typography variant="body2" color="text.secondary">{firstChild.emoji} Elternteil von {firstChild.name}</Typography>
+          )}
           <Chip label="Eltern-Account" size="small" sx={{ mt: 0.5 }} variant="outlined" />
         </Box>
       </Card>
@@ -89,11 +92,8 @@ export default function Mehr() {
                   {i > 0 && <Divider variant="inset" component="li" />}
                   <ListItemButton onClick={item.action} sx={{ py: 1.25 }}>
                     <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                    <ListItemText
-                      primary={item.label}
-                      secondary={item.desc}
-                      slotProps={{ primary: { sx: { fontWeight: 600, color: item.color } } }}
-                    />
+                    <ListItemText primary={item.label} secondary={item.desc}
+                      slotProps={{ primary: { sx: { fontWeight: 600, color: item.color } } }} />
                     {item.badge && <Chip label={item.badge} size="small" color="primary" sx={{ mr: 1 }} />}
                     <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
                   </ListItemButton>

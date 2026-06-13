@@ -13,7 +13,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useApp } from '../../context/AppContext';
 import { useMessages } from '../../hooks/useMessages';
 
-export default function NachrichtenDetail() {
+export default function TeamNachrichtenDetail() {
   const { convId } = useParams<{ convId: string }>();
   const navigate = useNavigate();
   const { conversations, sendMessage, markAsRead } = useApp();
@@ -33,8 +33,8 @@ export default function NachrichtenDetail() {
 
   if (!conv) {
     return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="text.secondary">Konversation nicht gefunden.</Typography>
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4, color: 'text.disabled' }}>
+        <Typography>Gespräch auswählen.</Typography>
       </Box>
     );
   }
@@ -55,10 +55,12 @@ export default function NachrichtenDetail() {
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
       <Paper elevation={1} sx={{ borderRadius: 0, flexShrink: 0 }}>
         <Toolbar variant="dense" sx={{ gap: 1 }}>
-          <IconButton edge="start" onClick={() => navigate('/eltern/nachrichten')} sx={{ display: { md: 'none' }, mr: 0 }}>
+          <IconButton edge="start" onClick={() => navigate('/team/nachrichten')} sx={{ display: { md: 'none' }, mr: 0 }}>
             <ArrowBackIcon />
           </IconButton>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: '#1A3545', fontSize: 13 }}>{conv.avatar}</Avatar>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: '#95C11F', color: '#1A3545', fontSize: 13, fontWeight: 700 }}>
+            {conv.avatar}
+          </Avatar>
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>{conv.from}</Typography>
             <Typography variant="caption" color="text.secondary">{conv.fromRole}</Typography>
@@ -88,11 +90,15 @@ export default function NachrichtenDetail() {
       </Box>
 
       <Paper elevation={2} sx={{ p: 1.5, display: 'flex', gap: 1, alignItems: 'flex-end', borderRadius: 0, flexShrink: 0 }}>
-        <TextField multiline maxRows={4} fullWidth size="small" placeholder="Nachricht schreiben …"
+        <TextField
+          multiline maxRows={4} fullWidth size="small" placeholder="Nachricht schreiben …"
           value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }} />
-        <IconButton onClick={handleSend} disabled={!input.trim()}
-          sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}>
+          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
+        />
+        <IconButton
+          onClick={handleSend} disabled={!input.trim()}
+          sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#7EA819' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}
+        >
           <SendIcon fontSize="small" />
         </IconButton>
       </Paper>
