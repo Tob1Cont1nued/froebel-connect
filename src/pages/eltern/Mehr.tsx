@@ -61,7 +61,7 @@ export default function Mehr() {
     {
       title: 'Hilfe',
       items: [
-        { icon: <HelpOutlinedIcon />, label: 'Hilfe & Support', desc: 'FAQ, Kontakt zum Kita-Team', action: () => {} },
+        { icon: <HelpOutlinedIcon />, label: 'Hilfe & Support', desc: 'FAQ, Kontakt zum Kita-Team', action: () => navigate('/eltern/hilfe') },
         { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: async () => { await signOut(); navigate('/login'); } },
       ],
     },

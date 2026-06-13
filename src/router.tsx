@@ -24,6 +24,7 @@ import ComingSoon from './pages/ComingSoon';
 import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
 import Sicherheit from './pages/Sicherheit';
+import Hilfe from './pages/Hilfe';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace />, errorElement: <ErrorPage /> },
@@ -50,6 +51,7 @@ export const router = createBrowserRouter([
       { path: 'mehr', element: <Mehr /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/eltern/mehr" /> },
       { path: 'sicherheit', element: <Sicherheit backPath="/eltern/mehr" /> },
+      { path: 'hilfe', element: <Hilfe backPath="/eltern/mehr" /> },
     ],
   },
   {
