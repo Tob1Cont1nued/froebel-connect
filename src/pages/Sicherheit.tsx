@@ -21,8 +21,9 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Sicherheit({ backPath }: { backPath: string }) {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
 
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [pwLoading, setPwLoading] = useState(false);
@@ -36,14 +37,22 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
   const handlePasswordChange = async () => {
     setPwError('');
     setPwSuccess(false);
-    if (newPassword.length < 8) { setPwError('Passwort muss mindestens 8 Zeichen lang sein.'); return; }
-    if (newPassword !== confirmPassword) { setPwError('Passwörter stimmen nicht überein.'); return; }
+    if (!currentPassword) { setPwError('Bitte aktuelles Passwort eingeben.'); return; }
+    if (newPassword.length < 8) { setPwError('Neues Passwort muss mindestens 8 Zeichen lang sein.'); return; }
+    if (newPassword !== confirmPassword) { setPwError('Neue Passwörter stimmen nicht überein.'); return; }
+    if (newPassword === currentPassword) { setPwError('Neues Passwort muss sich vom aktuellen unterscheiden.'); return; }
     setPwLoading(true);
+    const email = session?.user?.email ?? '';
+    // Altes Passwort verifizieren
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
+    if (signInError) { setPwLoading(false); setPwError('Aktuelles Passwort ist falsch.'); return; }
+    // Neues Passwort setzen
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.auth as any).updateUser({ password: newPassword });
     setPwLoading(false);
     if (error) { setPwError('Fehler: ' + error.message); return; }
     setPwSuccess(true);
+    setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
   };
@@ -75,6 +84,16 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
               Mindestens 8 Zeichen, Groß-/Kleinbuchstaben und Zahlen empfohlen.
             </Typography>
           </Box>
+          <TextField
+            label="Aktuelles Passwort"
+            type="password"
+            size="small"
+            fullWidth
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+          <Divider />
           <TextField
             label="Neues Passwort"
             type="password"
