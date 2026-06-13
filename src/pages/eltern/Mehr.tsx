@@ -35,7 +35,7 @@ interface MenuItem {
 export default function Mehr() {
   const navigate = useNavigate();
   const { profile, signOut } = useAuth();
-  const { firstChild } = useChildren();
+  const { children } = useChildren();
   const { documents } = useDocuments();
 
   const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
@@ -73,8 +73,10 @@ export default function Mehr() {
         <Avatar sx={{ width: 56, height: 56, bgcolor: '#1A3545', fontSize: 20, fontWeight: 700 }}>{avatarInitials}</Avatar>
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{profile?.name ?? ''}</Typography>
-          {firstChild && (
-            <Typography variant="body2" color="text.secondary">{firstChild.emoji} Elternteil von {firstChild.name}</Typography>
+          {children.length > 0 && (
+            <Typography variant="body2" color="text.secondary">
+              {children.map((c) => `${c.emoji} ${c.name}`).join(' · ')}
+            </Typography>
           )}
           <Chip label="Eltern-Account" size="small" sx={{ mt: 0.5 }} variant="outlined" />
         </Box>
