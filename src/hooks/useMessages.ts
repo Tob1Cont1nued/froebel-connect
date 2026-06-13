@@ -45,6 +45,7 @@ export function useMessages(convId: string | undefined) {
 
     fetchMessages();
 
+    // Real-time subscription (unzuverlässig auf Free Tier)
     channelRef.current = supabase
       .channel(`conv-${convId}`)
       .on(
@@ -61,7 +62,13 @@ export function useMessages(convId: string | undefined) {
       )
       .subscribe();
 
-    return () => { if (channelRef.current) supabase.removeChannel(channelRef.current); };
+    // Polling als Fallback alle 5 Sekunden
+    const interval = setInterval(fetchMessages, 5000);
+
+    return () => {
+      if (channelRef.current) supabase.removeChannel(channelRef.current);
+      clearInterval(interval);
+    };
   }, [convId, session?.user.id]);
 
   return { messages, loading, refetch: fetchMessages };
