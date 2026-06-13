@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
-import Avatar from '@mui/material/Avatar';
+import ProfileAvatar from '../../components/ProfileAvatar';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import List from '@mui/material/List';
@@ -48,6 +48,7 @@ type StaffEntry = {
   id: string;
   name: string;
   initials: string;
+  avatarUrl: string | null;
   byDate: Map<string, { start: string; end: string }>;
 };
 
@@ -92,13 +93,9 @@ function MobileView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: S
                     <Box key={staff.id}>
                       {i > 0 && <Divider component="li" />}
                       <ListItem sx={{ py: 1, bgcolor: isMe ? 'rgba(149,193,31,0.07)' : 'transparent' }}>
-                        <Avatar sx={{
-                          width: 30, height: 30, fontSize: 11, fontWeight: 700, mr: 1.5, flexShrink: 0,
-                          bgcolor: isMe ? '#95C11F' : '#1A3545',
-                          color: isMe ? '#1A3545' : 'white',
-                        }}>
-                          {staff.initials}
-                        </Avatar>
+                        <Box sx={{ mr: 1.5, flexShrink: 0 }}>
+                          <ProfileAvatar avatarUrl={staff.avatarUrl} initials={staff.initials} size={30} alt={staff.name} />
+                        </Box>
                         <ListItemText
                           primary={staff.name}
                           secondary={`${shift.start} – ${shift.end} Uhr`}
@@ -174,14 +171,7 @@ function DesktopView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: 
               }}
             >
               <Box sx={{ width: COL_NAME, flexShrink: 0, px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                <Avatar sx={{
-                  width: 32, height: 32, fontSize: 12, fontWeight: 700,
-                  bgcolor: isMe ? '#95C11F' : '#1A3545',
-                  color: isMe ? '#1A3545' : 'white',
-                  flexShrink: 0,
-                }}>
-                  {staff.initials}
-                </Avatar>
+                <ProfileAvatar avatarUrl={staff.avatarUrl} initials={staff.initials} size={32} alt={staff.name} />
                 <Box sx={{ minWidth: 0 }}>
                   <Typography variant="body2" sx={{ fontWeight: isMe ? 700 : 500 }} noWrap>{staff.name.split(' ')[0]}</Typography>
                   <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 10 }} noWrap>{staff.name.split(' ').slice(1).join(' ')}</Typography>
@@ -242,7 +232,7 @@ export default function TeamDienstplan() {
     const map = new Map<string, StaffEntry>();
     for (const s of shifts) {
       if (!map.has(s.profile_id)) {
-        map.set(s.profile_id, { id: s.profile_id, name: s.profile_name, initials: s.profile_initials, byDate: new Map() });
+        map.set(s.profile_id, { id: s.profile_id, name: s.profile_name, initials: s.profile_initials, avatarUrl: s.profile_avatar_url, byDate: new Map() });
       }
       map.get(s.profile_id)!.byDate.set(s.date, { start: s.start_time, end: s.end_time });
     }

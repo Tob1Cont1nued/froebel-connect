@@ -8,6 +8,7 @@ export interface ShiftItem {
   profile_id: string;
   profile_name: string;
   profile_initials: string;
+  profile_avatar_url: string | null;
   start_time: string;
   end_time: string;
   note: string | null;
@@ -33,7 +34,7 @@ export function useShifts(weekStart: Date) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from('shifts')
-      .select('id, date, profile_id, start_time, end_time, note, profiles(name)')
+      .select('id, date, profile_id, start_time, end_time, note, profiles(name, avatar_url)')
       .gte('date', fromStr)
       .lte('date', toStr)
       .order('date', { ascending: true })
@@ -47,6 +48,7 @@ export function useShifts(weekStart: Date) {
             profile_id: s.profile_id,
             profile_name: s.profiles?.name ?? 'Unbekannt',
             profile_initials: toInitials(s.profiles?.name ?? 'XX'),
+            profile_avatar_url: s.profiles?.avatar_url ?? null,
             start_time: s.start_time.slice(0, 5),
             end_time: s.end_time.slice(0, 5),
             note: s.note,
