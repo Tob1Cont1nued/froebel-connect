@@ -174,7 +174,10 @@ export default function TeamLayout() {
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <Avatar sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
+            <Avatar
+              onClick={() => navigate('/team/profil')}
+              sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            >
               {avatarInitials}
             </Avatar>
           </Toolbar>

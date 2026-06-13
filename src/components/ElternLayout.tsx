@@ -90,7 +90,7 @@ export default function ElternLayout() {
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
         <Box
           sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
-          onClick={() => navigate('/eltern/mehr')}
+          onClick={() => navigate('/eltern/profil')}
         >
           <Avatar sx={{ width: 36, height: 36, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
             {avatarInitials}
@@ -164,7 +164,7 @@ export default function ElternLayout() {
             </IconButton>
             <Avatar
               sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
-              onClick={() => navigate('/eltern/mehr')}
+              onClick={() => navigate('/eltern/profil')}
             >
               {avatarInitials}
             </Avatar>
