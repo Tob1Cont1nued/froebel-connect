@@ -157,8 +157,14 @@ export default function TeamLayout() {
               {currentLabel}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton color="inherit" size="small" sx={{ mr: 0.5 }} aria-label="Benachrichtigungen, 3 ungelesen">
-              <Badge badgeContent={3} color="error">
+            <IconButton
+              color="inherit"
+              size="small"
+              sx={{ mr: 0.5 }}
+              aria-label={unreadCount > 0 ? `Benachrichtigungen, ${unreadCount} ungelesen` : 'Benachrichtigungen'}
+              onClick={() => navigate('/team/nachrichten')}
+            >
+              <Badge badgeContent={unreadCount > 0 ? unreadCount : undefined} color="error">
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>

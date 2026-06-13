@@ -147,6 +147,7 @@ export default function ElternLayout() {
               size="small"
               sx={{ mr: 0.5 }}
               aria-label={unreadCount > 0 ? `Benachrichtigungen, ${unreadCount} ungelesen` : 'Benachrichtigungen'}
+              onClick={() => navigate('/eltern/nachrichten')}
             >
               <Badge badgeContent={unreadCount > 0 ? unreadCount : undefined} color="error">
                 <NotificationsOutlinedIcon />
