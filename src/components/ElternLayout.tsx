@@ -28,6 +28,7 @@ import { useApp } from '../context/AppContext';
 import ProfileAvatar from './ProfileAvatar';
 
 const DRAWER_WIDTH = 240;
+const HEADER_HEIGHT = 80;
 
 const navItems = [
   { label: 'Home', icon: <HomeOutlinedIcon />, path: '/eltern/dashboard' },
@@ -49,7 +50,7 @@ export default function ElternLayout() {
 
   const sidebarContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ p: 2.5, pb: 1.5 }}>
+      <Box sx={{ px: 2.5, height: HEADER_HEIGHT, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Typography variant="h6" sx={{ fontWeight: 800, color: 'white', letterSpacing: '-0.3px' }}>
           FRÖBEL<span style={{ color: '#95C11F' }}>.connect</span>
         </Typography>
@@ -139,7 +140,7 @@ export default function ElternLayout() {
       {/* Main column — fills remaining width, bounded to viewport height */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100dvh', minWidth: 0 }}>
         <AppBar position="static" sx={{ bgcolor: '#1A3545', color: 'white', flexShrink: 0 }} elevation={1}>
-          <Toolbar>
+          <Toolbar sx={{ minHeight: { md: HEADER_HEIGHT } }}>
             {/* Mobile: logo */}
             <Typography
               variant="h6"
