@@ -21,6 +21,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import ProfileAvatar from './ProfileAvatar';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
@@ -91,10 +92,8 @@ export default function TeamLayout() {
       </List>
       <Box sx={{ p: 2 }}>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Avatar sx={{ width: 36, height: 36, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
-            {avatarInitials}
-          </Avatar>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }} onClick={() => navigate('/team/profil')}>
+          <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={36} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }} noWrap>
               {profile?.name ?? ''}
@@ -174,12 +173,7 @@ export default function TeamLayout() {
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <Avatar
-              onClick={() => navigate('/team/profil')}
-              sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
-            >
-              {avatarInitials}
-            </Avatar>
+            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} onClick={() => navigate('/team/profil')} />
           </Toolbar>
         </AppBar>
 

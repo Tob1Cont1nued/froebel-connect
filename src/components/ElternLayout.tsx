@@ -26,6 +26,7 @@ import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 import { useApp } from '../context/AppContext';
+import ProfileAvatar from './ProfileAvatar';
 
 const DRAWER_WIDTH = 240;
 
@@ -92,9 +93,7 @@ export default function ElternLayout() {
           sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
           onClick={() => navigate('/eltern/profil')}
         >
-          <Avatar sx={{ width: 36, height: 36, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
-            {avatarInitials}
-          </Avatar>
+          <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={36} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }} noWrap>
               {profile?.name ?? ''}
@@ -162,12 +161,7 @@ export default function ElternLayout() {
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <Avatar
-              sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
-              onClick={() => navigate('/eltern/profil')}
-            >
-              {avatarInitials}
-            </Avatar>
+            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} onClick={() => navigate('/eltern/profil')} />
           </Toolbar>
         </AppBar>
 
