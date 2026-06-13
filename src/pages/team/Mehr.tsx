@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -18,13 +19,14 @@ import { mockUsers } from '../../mockData';
 
 export default function TeamMehr() {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const user = mockUsers.fachkraft;
 
   const items = [
     { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: user.email, action: () => {} },
     { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => {} },
     { icon: <HelpOutlinedIcon />, label: 'Hilfe & Support', desc: 'FAQ, Kontakt', action: () => {} },
-    { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: () => navigate('/login') },
+    { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: async () => { await signOut(); navigate('/login'); } },
   ];
 
   return (

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -32,6 +33,7 @@ interface MenuItem {
 
 export default function Mehr() {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const user = mockUsers.eltern;
 
   const sections: { title: string; items: MenuItem[] }[] = [
@@ -56,7 +58,7 @@ export default function Mehr() {
       title: 'Hilfe',
       items: [
         { icon: <HelpOutlinedIcon />, label: 'Hilfe & Support', desc: 'FAQ, Kontakt zum Kita-Team', action: () => {} },
-        { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: () => navigate('/login') },
+        { icon: <LogoutIcon sx={{ color: '#C62828' }} />, label: 'Abmelden', color: '#C62828', action: async () => { await signOut(); navigate('/login'); } },
       ],
     },
   ];

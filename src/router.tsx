@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 import ElternLayout from './components/ElternLayout';
 import Dashboard from './pages/eltern/Dashboard';
 import NachrichtenLayout, { EmptyState as NachrichtenEmpty } from './pages/eltern/NachrichtenLayout';
@@ -21,7 +22,7 @@ export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   {
     path: '/eltern',
-    element: <ElternLayout />,
+    element: <ProtectedRoute role="eltern"><ElternLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
@@ -42,7 +43,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/team',
-    element: <TeamLayout />,
+    element: <ProtectedRoute role="fachkraft"><TeamLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <TeamDashboard /> },
@@ -54,7 +55,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/traeger',
-    element: <TraegerLayout />,
+    element: <ProtectedRoute role="traeger"><TraegerLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <TraegerDashboard /> },

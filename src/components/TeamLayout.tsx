@@ -1,4 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -39,6 +40,7 @@ const navItems = [
 export default function TeamLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { signOut } = useAuth();
   const user = mockUsers.fachkraft;
 
   const navValue = navItems.findIndex((item) => location.pathname.startsWith(item.path));
@@ -106,7 +108,7 @@ export default function TeamLayout() {
           size="small"
           fullWidth
           sx={{ mt: 1, color: 'rgba(255,255,255,0.65)', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
-          onClick={() => navigate('/login')}
+          onClick={async () => { await signOut(); navigate('/login'); }}
         >
           Abmelden
         </Button>

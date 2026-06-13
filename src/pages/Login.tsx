@@ -6,27 +6,40 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import ToggleButton from '@mui/material/ToggleButton';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
-import type { Role } from '../mockData';
-
-const roles: { value: Role; label: string; emoji: string; desc: string }[] = [
-  { value: 'eltern', label: 'Eltern', emoji: '👨‍👩‍👧', desc: 'Für Familien' },
-  { value: 'fachkraft', label: 'Fachkraft', emoji: '👩‍🏫', desc: 'Erzieher:innen' },
-  { value: 'traeger', label: 'Verwaltung', emoji: '🏢', desc: 'Träger & Leitung' },
-];
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<Role>('eltern');
+  const { signIn, profile } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (role === 'eltern') navigate('/eltern/dashboard');
-    else if (role === 'fachkraft') navigate('/team/dashboard');
-    else navigate('/traeger/dashboard');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Bitte E-Mail und Passwort eingeben.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    const err = await signIn(email, password);
+    if (err) {
+      setError('Anmeldung fehlgeschlagen. Bitte E-Mail und Passwort prüfen.');
+      setLoading(false);
+      return;
+    }
+    // Nach Login: zur passenden Startseite weiterleiten
+    // profile wird kurz nach signIn geladen — kurz warten
+    setTimeout(() => {
+      const role = profile?.role;
+      if (role === 'fachkraft') navigate('/team/dashboard');
+      else if (role === 'traeger') navigate('/traeger/dashboard');
+      else navigate('/eltern/dashboard');
+    }, 300);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -45,60 +58,26 @@ export default function Login() {
         p: 2,
       }}
     >
-      {/* Wordmark */}
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="h4" sx={{ color: '#fff', fontWeight: 800, letterSpacing: '-0.5px' }}>
           FRÖBEL<span style={{ color: '#95C11F' }}>.connect</span>
         </Typography>
         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
-          Kita-App · Kita Langebusch, Münster
+          Kita-App · Sicher & DSGVO-konform
         </Typography>
       </Box>
 
       <Card sx={{ width: '100%', maxWidth: 420, borderRadius: 3 }}>
         <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2.5 }}>
             Anmelden
           </Typography>
 
-          {/* Role selector */}
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-            Ich bin …
-          </Typography>
-          <ToggleButtonGroup
-            value={role}
-            exclusive
-            onChange={(_, v) => v && setRole(v)}
-            fullWidth
-            size="small"
-            sx={{ mb: 3 }}
-          >
-            {roles.map((r) => (
-              <ToggleButton
-                key={r.value}
-                value={r.value}
-                sx={{
-                  flexDirection: 'column',
-                  py: 1.5,
-                  gap: 0.25,
-                  borderRadius: '12px !important',
-                  '&.Mui-selected': {
-                    bgcolor: 'secondary.main',
-                    color: 'white',
-                    '&:hover': { bgcolor: 'secondary.dark' },
-                  },
-                }}
-              >
-                <span style={{ fontSize: 20 }}>{r.emoji}</span>
-                <Typography variant="caption" sx={{ fontWeight: 600, lineHeight: 1 }}>
-                  {r.label}
-                </Typography>
-                <Typography variant="caption" sx={{ fontSize: 10, opacity: 0.7, lineHeight: 1 }}>
-                  {r.desc}
-                </Typography>
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
           <TextField
             label="E-Mail-Adresse"
@@ -108,13 +87,7 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={handleKeyDown}
             sx={{ mb: 2 }}
-            placeholder={
-              role === 'eltern'
-                ? 'sandra.meier@example.de'
-                : role === 'fachkraft'
-                ? 'stefanie.mueller@froebel.de'
-                : 'thomas.becker@froebel.de'
-            }
+            autoComplete="email"
           />
           <TextField
             label="Passwort"
@@ -124,10 +97,18 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
             sx={{ mb: 3 }}
+            autoComplete="current-password"
           />
 
-          <Button variant="contained" size="large" fullWidth onClick={handleLogin}>
-            Anmelden
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleLogin}
+            disabled={loading}
+            sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' } }}
+          >
+            {loading ? <CircularProgress size={22} sx={{ color: '#1A3545' }} /> : 'Anmelden'}
           </Button>
 
           <Divider sx={{ my: 2 }} />
