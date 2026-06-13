@@ -21,12 +21,14 @@ import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
 import ComingSoon from './pages/ComingSoon';
+import ErrorPage from './pages/ErrorPage';
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Navigate to="/login" replace /> },
-  { path: '/login', element: <Login /> },
+  { path: '/', element: <Navigate to="/login" replace />, errorElement: <ErrorPage /> },
+  { path: '/login', element: <Login />, errorElement: <ErrorPage /> },
   {
     path: '/eltern',
+    errorElement: <ErrorPage />,
     element: <ProtectedRoute role="eltern"><ElternLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
@@ -48,6 +50,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/team',
+    errorElement: <ErrorPage />,
     element: <ProtectedRoute role="fachkraft"><TeamLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
@@ -68,6 +71,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/traeger',
+    errorElement: <ErrorPage />,
     element: <ProtectedRoute role="traeger"><TraegerLayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
