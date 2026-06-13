@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, useMatch, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,14 +8,29 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useApp } from '../../context/AppContext';
 
 function NachrichtenListe() {
   const navigate = useNavigate();
-  const { conversations } = useApp();
+  const { conversations, deleteConversation } = useApp();
   const matchDetail = useMatch('/team/nachrichten/:convId');
   const activeId = matchDetail?.params.convId;
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!confirmId) return;
+    await deleteConversation(confirmId);
+    setConfirmId(null);
+    if (activeId === confirmId) navigate('/team/nachrichten');
+  };
 
   return (
     <>
@@ -36,8 +52,19 @@ function NachrichtenListe() {
                 cursor: 'pointer',
                 bgcolor: activeId === conv.id ? 'action.selected' : 'transparent',
                 '&:hover': { bgcolor: 'action.hover' },
+                '&:hover .delete-btn': { opacity: 1 },
               }}
               onClick={() => navigate(`/team/nachrichten/${conv.id}`)}
+              secondaryAction={
+                <IconButton
+                  className="delete-btn"
+                  size="small"
+                  onClick={(e) => { e.stopPropagation(); setConfirmId(conv.id); }}
+                  sx={{ opacity: { xs: 1, md: 0 }, transition: 'opacity 0.15s', color: 'text.disabled', '&:hover': { color: 'error.main' } }}
+                >
+                  <DeleteOutlineIcon fontSize="small" />
+                </IconButton>
+              }
             >
               <ListItemAvatar>
                 <Badge badgeContent={conv.unread} color="error" invisible={conv.unread === 0} overlap="circular">
@@ -68,6 +95,19 @@ function NachrichtenListe() {
           </Box>
         ))}
       </List>
+
+      <Dialog open={!!confirmId} onClose={() => setConfirmId(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Konversation löschen?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary">
+            Diese Konversation wird aus deiner Liste entfernt. Du kannst sie danach nicht mehr einsehen.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmId(null)}>Abbrechen</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">Löschen</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

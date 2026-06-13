@@ -18,6 +18,7 @@ interface AppContextType {
   loading: boolean;
   sendMessage: (convId: string, text: string) => Promise<void>;
   markAsRead: (convId: string) => Promise<void>;
+  deleteConversation: (convId: string) => Promise<void>;
   createConversation: (recipientId: string, recipientName: string, subject: string | null, firstMessage: string) => Promise<string | null>;
 }
 
@@ -116,6 +117,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setConversations((prev) => prev.map((c) => c.id === convId ? { ...c, unread: 0 } : c));
   };
 
+  const deleteConversation = async (convId: string) => {
+    if (!session) return;
+    await (supabase as any)
+      .from('conversation_participants')
+      .delete()
+      .eq('conversation_id', convId)
+      .eq('profile_id', session.user.id);
+    setConversations((prev) => prev.filter((c) => c.id !== convId));
+  };
+
   const createConversation = async (recipientId: string, recipientName: string, subject: string | null, firstMessage: string): Promise<string | null> => {
     if (!session) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,7 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ conversations, unreadCount, loading, sendMessage, markAsRead, createConversation }}>
+    <AppContext.Provider value={{ conversations, unreadCount, loading, sendMessage, markAsRead, deleteConversation, createConversation }}>
       {children}
     </AppContext.Provider>
   );
