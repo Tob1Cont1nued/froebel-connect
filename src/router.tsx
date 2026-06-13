@@ -26,6 +26,7 @@ import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
 import Sicherheit from './pages/Sicherheit';
 import Hilfe from './pages/Hilfe';
+import Barrierefreiheit from './pages/Barrierefreiheit';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace />, errorElement: <ErrorPage /> },
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
       { path: 'datenschutz', element: <Datenschutz backPath="/eltern/mehr" /> },
       { path: 'sicherheit', element: <Sicherheit backPath="/eltern/mehr" /> },
       { path: 'hilfe', element: <Hilfe backPath="/eltern/mehr" /> },
+      { path: 'barrierefreiheit', element: <Barrierefreiheit backPath="/eltern/mehr" /> },
     ],
   },
   {
@@ -77,6 +79,7 @@ export const router = createBrowserRouter([
       { path: 'profil', element: <TeamProfil /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/team/mehr" /> },
       { path: 'sicherheit', element: <Sicherheit backPath="/team/mehr" /> },
+      { path: 'barrierefreiheit', element: <Barrierefreiheit backPath="/team/mehr" /> },
     ],
   },
   {

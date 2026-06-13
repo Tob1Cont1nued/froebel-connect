@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+body.high-contrast {
+  filter: contrast(1.2) saturate(0.85);
+}

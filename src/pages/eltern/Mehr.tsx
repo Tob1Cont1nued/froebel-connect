@@ -30,6 +30,7 @@ interface MenuItem {
   badge?: string;
   action: () => void;
   color?: string;
+  soon?: boolean;
 }
 
 export default function Mehr() {
@@ -46,14 +47,14 @@ export default function Mehr() {
       items: [
         { icon: <EventBusyIcon color="secondary" />, label: 'Abwesenheit melden', desc: 'Kind für einen Tag abmelden', action: () => navigate('/eltern/abwesenheit') },
         { icon: <DescriptionOutlinedIcon color="primary" />, label: 'Dokumente', desc: `${documents.length} Dokumente verfügbar`, badge: documents.length > 0 ? String(documents.length) : undefined, action: () => navigate('/eltern/dokumente') },
-        { icon: <AssignmentOutlinedIcon color="primary" />, label: 'Digitale Formulare', desc: 'Einwilligungen, Anmeldungen', action: () => {} },
+        { icon: <AssignmentOutlinedIcon color="primary" />, label: 'Digitale Formulare', desc: 'Einwilligungen, Anmeldungen', action: () => {}, soon: true },
       ],
     },
     {
       title: 'Einstellungen',
       items: [
-        { icon: <LanguageIcon />, label: 'Sprache', desc: 'Deutsch (DE) · 29 weitere verfügbar', action: () => {} },
-        { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => {} },
+        { icon: <LanguageIcon />, label: 'Sprache', desc: 'Deutsch (DE) · 29 weitere verfügbar', action: () => {}, soon: true },
+        { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => navigate('/eltern/barrierefreiheit') },
         { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: profile?.email ?? '', action: () => navigate('/eltern/profil') },
         { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => navigate('/eltern/sicherheit') },
       ],
@@ -92,12 +93,14 @@ export default function Mehr() {
               {section.items.map((item, i) => (
                 <Box key={item.label}>
                   {i > 0 && <Divider variant="inset" component="li" />}
-                  <ListItemButton onClick={item.action} sx={{ py: 1.25 }}>
+                  <ListItemButton onClick={item.action} disabled={item.soon} sx={{ py: 1.25 }}>
                     <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.label} secondary={item.desc}
                       slotProps={{ primary: { sx: { fontWeight: 600, color: item.color } } }} />
                     {item.badge && <Chip label={item.badge} size="small" color="primary" sx={{ mr: 1 }} />}
-                    <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+                    {item.soon
+                      ? <Chip label="Bald" size="small" variant="outlined" sx={{ fontSize: 10, height: 20 }} />
+                      : <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />}
                   </ListItemButton>
                 </Box>
               ))}

@@ -5,16 +5,19 @@ import { theme } from './theme';
 import { router } from './router';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
+import { AccessibilityProvider } from './context/AccessibilityContext';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <AppProvider>
-          <RouterProvider router={router} />
-        </AppProvider>
-      </AuthProvider>
+      <AccessibilityProvider>
+        <AuthProvider>
+          <AppProvider>
+            <RouterProvider router={router} />
+          </AppProvider>
+        </AuthProvider>
+      </AccessibilityProvider>
     </ThemeProvider>
   );
 }
