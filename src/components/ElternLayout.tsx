@@ -89,20 +89,6 @@ export default function ElternLayout() {
       </List>
       <Box sx={{ p: 2 }}>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
-          onClick={() => navigate('/eltern/profil')}
-        >
-          <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={36} />
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }} noWrap>
-              {profile?.name ?? ''}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
-              Eltern-Account
-            </Typography>
-          </Box>
-        </Box>
         <Button
           startIcon={<LogoutIcon />}
           size="small"
