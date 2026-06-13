@@ -28,7 +28,7 @@ function ChildDetail({ child, onClose }: { child: ChildItem; onClose: () => void
 
   const childAbsences = absences.filter((a) => a.child_id === child.id);
   const today = new Date().toISOString().split('T')[0];
-  const isAbsentToday = childAbsences.some(
+  const todayAbsence = childAbsences.find(
     (a) => a.from_date <= today && a.to_date >= today && a.status !== 'rejected'
   );
 
@@ -52,8 +52,8 @@ function ChildDetail({ child, onClose }: { child: ChildItem; onClose: () => void
       <DialogContent sx={{ pt: 0 }}>
         {/* Status heute */}
         <Box sx={{ mb: 2 }}>
-          {isAbsentToday ? (
-            <Chip icon={<CancelIcon />} label="Heute abwesend" color="error" variant="outlined" size="small" />
+          {todayAbsence ? (
+            <Chip icon={<CancelIcon />} label={`Heute abwesend · ${todayAbsence.reason}`} color="error" variant="outlined" size="small" />
           ) : (
             <Chip icon={<CheckCircleIcon />} label="Heute anwesend" color="success" variant="outlined" size="small" />
           )}
@@ -131,22 +131,22 @@ export default function TeamKinder() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  const absentTodayIds = useMemo(() => {
-    const ids = new Set<string>();
+  const absentTodayMap = useMemo(() => {
+    const map = new Map<string, string>();
     for (const a of absences) {
       if (a.from_date <= today && a.to_date >= today && a.status !== 'rejected') {
-        ids.add(a.child_id);
+        map.set(a.child_id, a.reason);
       }
     }
-    return ids;
+    return map;
   }, [absences, today]);
 
   const filtered = children.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const present = children.filter((c) => !absentTodayIds.has(c.id)).length;
-  const absent = absentTodayIds.size;
+  const present = children.filter((c) => !absentTodayMap.has(c.id)).length;
+  const absent = absentTodayMap.size;
 
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 900 }, mx: 'auto', width: '100%' }}>
@@ -184,7 +184,8 @@ export default function TeamKinder() {
       ) : (
         <Card>
           {filtered.map((child, i) => {
-            const isAbsent = absentTodayIds.has(child.id);
+            const absentReason = absentTodayMap.get(child.id);
+          const isAbsent = absentReason !== undefined;
             return (
               <Box key={child.id}>
                 {i > 0 && <Divider />}
@@ -208,7 +209,7 @@ export default function TeamKinder() {
                     </Typography>
                   </Box>
                   {isAbsent ? (
-                    <Chip icon={<CancelIcon />} label="Abwesend" size="small" color="error" variant="outlined" />
+                    <Chip icon={<CancelIcon />} label={absentReason ?? 'Abwesend'} size="small" color="error" variant="outlined" />
                   ) : (
                     <Chip icon={<CheckCircleIcon />} label="Anwesend" size="small" color="success" variant="outlined" />
                   )}
