@@ -9,6 +9,7 @@ import Abwesenheit from './pages/eltern/Abwesenheit';
 import Termine from './pages/eltern/Termine';
 import Portfolio from './pages/eltern/Portfolio';
 import Mehr from './pages/eltern/Mehr';
+import ElternProfil from './pages/eltern/Profil';
 import Dokumente from './pages/eltern/Dokumente';
 import TeamLayout from './components/TeamLayout';
 import TeamDashboard from './pages/team/Dashboard';
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
       { path: 'portfolio', element: <Portfolio /> },
       { path: 'dokumente', element: <Dokumente /> },
       { path: 'mehr', element: <Mehr /> },
+      { path: 'profil', element: <ElternProfil /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/eltern/mehr" /> },
       { path: 'sicherheit', element: <Sicherheit backPath="/eltern/mehr" /> },
       { path: 'hilfe', element: <Hilfe backPath="/eltern/mehr" /> },
