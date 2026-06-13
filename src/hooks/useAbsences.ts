@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 export interface AbsenceItem {
   id: string;
+  childId: string;
   from: Date;
   to: Date;
   reason: string;
@@ -17,6 +18,7 @@ export interface AbsenceItem {
 function toItem(a: any): AbsenceItem {
   return {
     id: a.id,
+    childId: a.child_id,
     from: new Date(a.from_date),
     to: new Date(a.to_date),
     reason: a.reason,

@@ -22,12 +22,21 @@ import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../../context/AuthContext';
 import { useChildren } from '../../hooks/useChildren';
+import { useAbsences } from '../../hooks/useAbsences';
 import AvatarPicker from '../../components/AvatarPicker';
 
 export default function ElternProfil() {
   const navigate = useNavigate();
   const { profile, signOut, updateProfile } = useAuth();
   const { children } = useChildren();
+  const { absences } = useAbsences();
+
+  const today = new Date().toISOString().split('T')[0];
+  const absentTodayMap = new Map(
+    absences
+      .filter((a) => a.from.toISOString().split('T')[0] <= today && a.to.toISOString().split('T')[0] >= today)
+      .map((a) => [a.childId, a.reason])
+  );
 
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(profile?.name ?? '');
@@ -136,8 +145,12 @@ export default function ElternProfil() {
                     </ListItemIcon>
                     <ListItemText
                       primary={child.name}
-                      secondary={child.age !== null ? `${child.age} Jahre · ${child.kita_name ?? 'Kita'}` : child.kita_name ?? 'Kita'}
-                      slotProps={{ primary: { variant: 'body2', sx: { fontWeight: 600 } } }}
+                      secondary={(() => {
+                        const absentReason = absentTodayMap.get(child.id);
+                        const status = absentReason ? `Abwesend · ${absentReason}` : 'Anwesend';
+                        return child.age !== null ? `${child.age} Jahre · ${status}` : status;
+                      })()}
+                      slotProps={{ primary: { variant: 'body2', sx: { fontWeight: 600 } }, secondary: { sx: { color: absentTodayMap.has(child.id) ? 'warning.main' : 'success.main', fontWeight: 500 } } }}
                     />
                   </ListItem>
                 </Box>
