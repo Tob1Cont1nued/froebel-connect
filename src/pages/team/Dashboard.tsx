@@ -12,7 +12,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useAuth } from '../../context/AuthContext';
-import { useChildren } from '../../hooks/useChildren';
+import { useKitaChildren as useChildren } from '../../hooks/useKitaChildren';
 import { useKitaAbsences } from '../../hooks/useKitaAbsences';
 
 export default function TeamDashboard() {
@@ -24,19 +24,19 @@ export default function TeamDashboard() {
   const todayStr = today.toISOString().split('T')[0];
   const kitaName = children[0]?.kita_name ?? 'Kita';
 
-  const absentTodayIds = useMemo(() => {
-    const ids = new Set<string>();
+  const absentTodayMap = useMemo(() => {
+    const map = new Map<string, string>();
     for (const a of absences) {
       if (a.from_date <= todayStr && a.to_date >= todayStr && a.status !== 'rejected') {
-        ids.add(a.child_id);
+        map.set(a.child_id, a.reason);
       }
     }
-    return ids;
+    return map;
   }, [absences, todayStr]);
 
   const pendingAbsences = absences.filter((a) => a.status === 'pending');
-  const presentCount = children.filter((c) => !absentTodayIds.has(c.id)).length;
-  const absentCount = absentTodayIds.size;
+  const presentCount = children.filter((c) => !absentTodayMap.has(c.id)).length;
+  const absentCount = absentTodayMap.size;
   const loading = childrenLoading || absencesLoading;
 
   return (
@@ -158,7 +158,7 @@ export default function TeamDashboard() {
       ) : (
         <Card>
           {children.map((child, i) => {
-            const isAbsent = absentTodayIds.has(child.id);
+            const absentReason = absentTodayMap.get(child.id);
             return (
               <Box key={child.id}>
                 {i > 0 && <Divider />}
@@ -172,8 +172,8 @@ export default function TeamDashboard() {
                       <Typography variant="caption" color="text.secondary">{child.age} Jahre</Typography>
                     )}
                   </Box>
-                  {isAbsent ? (
-                    <Chip icon={<CancelIcon />} label="Abwesend" size="small" color="error" variant="outlined" />
+                  {absentReason !== undefined ? (
+                    <Chip icon={<CancelIcon />} label={absentReason} size="small" color="error" variant="outlined" />
                   ) : (
                     <Chip icon={<CheckCircleIcon />} label="Anwesend" size="small" color="success" variant="outlined" />
                   )}
