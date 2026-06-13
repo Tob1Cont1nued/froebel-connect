@@ -46,6 +46,7 @@ export default function Nachrichten() {
                 <IconButton
                   className="delete-btn"
                   size="small"
+                  aria-label={`Konversation mit ${conv.from} löschen`}
                   onClick={(e) => { e.stopPropagation(); setConfirmId(conv.id); }}
                   sx={{ opacity: { xs: 1, md: 0 }, transition: 'opacity 0.15s', color: 'text.disabled', '&:hover': { color: 'error.main' } }}
                 >

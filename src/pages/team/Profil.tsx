@@ -95,17 +95,17 @@ export default function TeamProfil() {
                   width: 220,
                 }}
               />
-              <IconButton size="small" onClick={handleSave} disabled={saving} sx={{ color: '#95C11F' }}>
+              <IconButton size="small" onClick={handleSave} disabled={saving} aria-label="Namen speichern" sx={{ color: '#95C11F' }}>
                 <CheckIcon fontSize="small" />
               </IconButton>
-              <IconButton size="small" onClick={handleCancel} sx={{ color: 'rgba(255,255,255,0.6)' }}>
+              <IconButton size="small" onClick={handleCancel} aria-label="Bearbeitung abbrechen" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                 <CloseIcon fontSize="small" />
               </IconButton>
             </Box>
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>{profile?.name ?? ''}</Typography>
-              <IconButton size="small" onClick={() => { setNameInput(profile?.name ?? ''); setEditing(true); }} sx={{ color: 'rgba(255,255,255,0.5)', '&:hover': { color: 'white' } }}>
+              <IconButton size="small" onClick={() => { setNameInput(profile?.name ?? ''); setEditing(true); }} aria-label="Namen bearbeiten" sx={{ color: 'rgba(255,255,255,0.5)', '&:hover': { color: 'white' } }}>
                 <EditOutlinedIcon sx={{ fontSize: 16 }} />
               </IconButton>
             </Box>

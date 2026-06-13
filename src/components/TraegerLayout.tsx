@@ -141,6 +141,7 @@ export default function TraegerLayout() {
             <IconButton
               edge="start"
               onClick={() => setMobileOpen(true)}
+              aria-label="Menü öffnen"
               sx={{ mr: 1, display: { md: 'none' } }}
             >
               <MenuIcon />
@@ -154,7 +155,7 @@ export default function TraegerLayout() {
           </Toolbar>
         </AppBar>
 
-        <Box sx={{ flex: 1, bgcolor: 'background.default', overflow: 'auto' }}>
+        <Box component="main" id="main-content" sx={{ flex: 1, bgcolor: 'background.default', overflow: 'auto' }}>
           <Outlet />
         </Box>
       </Box>

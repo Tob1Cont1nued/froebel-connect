@@ -5,9 +5,10 @@ interface Props {
   initials: string;
   size?: number;
   onClick?: () => void;
+  alt?: string;
 }
 
-export default function ProfileAvatar({ avatarUrl, initials, size = 36, onClick }: Props) {
+export default function ProfileAvatar({ avatarUrl, initials, size = 36, onClick, alt }: Props) {
   const sx = {
     width: size,
     height: size,
@@ -26,7 +27,7 @@ export default function ProfileAvatar({ avatarUrl, initials, size = 36, onClick 
   }
 
   if (avatarUrl) {
-    return <Avatar src={avatarUrl} onClick={onClick} sx={sx} />;
+    return <Avatar src={avatarUrl} alt={alt ?? initials} onClick={onClick} sx={sx} />;
   }
 
   return (

@@ -139,6 +139,7 @@ export default function AvatarPicker({ size = 72, initials }: Props) {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            aria-label="Foto aus Galerie hochladen"
             style={{ display: 'none' }}
             onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
           />
@@ -147,6 +148,7 @@ export default function AvatarPicker({ size = 72, initials }: Props) {
             type="file"
             accept="image/*"
             capture="user"
+            aria-label="Foto mit Kamera aufnehmen"
             style={{ display: 'none' }}
             onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
           />

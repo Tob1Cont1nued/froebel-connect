@@ -74,10 +74,14 @@ function SwipeableItem({
       {/* Red delete background (mobile only) */}
       {isMobile && (
         <Box
+          role="button"
+          aria-label="Löschen"
+          tabIndex={-1}
           sx={{
             position: 'absolute', right: 0, top: 0, bottom: 0,
             width: SWIPE_MAX, bgcolor: 'error.main',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
           }}
           onClick={() => { reset(); onDelete(); }}
         >
@@ -106,6 +110,7 @@ function SwipeableItem({
             <IconButton
               className="delete-btn"
               size="small"
+              aria-label={`Konversation mit ${conv.from} löschen`}
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
               sx={{ opacity: 0, transition: 'opacity 0.15s', color: 'text.disabled', '&:hover': { color: 'error.main' } }}
             >
@@ -202,6 +207,7 @@ function NachrichtenListe() {
         <Tooltip title="Neue Nachricht">
           <IconButton
             size="small"
+            aria-label="Neue Nachricht schreiben"
             onClick={() => setOpen(true)}
             sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#7EA819' } }}
           >

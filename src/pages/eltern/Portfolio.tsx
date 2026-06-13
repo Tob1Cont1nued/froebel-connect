@@ -101,7 +101,7 @@ export default function Portfolio() {
                   {selected.date.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </Typography>
               </Box>
-              <IconButton size="small" onClick={() => setSelected(null)}><CloseIcon /></IconButton>
+              <IconButton size="small" onClick={() => setSelected(null)} aria-label="Schließen"><CloseIcon /></IconButton>
             </DialogTitle>
             <DialogContent>
               <Box sx={{ fontSize: 80, textAlign: 'center', py: 2 }}>{selected.emoji}</Box>

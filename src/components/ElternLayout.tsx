@@ -156,17 +156,22 @@ export default function ElternLayout() {
               {currentLabel}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton color="inherit" size="small" sx={{ mr: 0.5 }}>
+            <IconButton
+              color="inherit"
+              size="small"
+              sx={{ mr: 0.5 }}
+              aria-label={unreadCount > 0 ? `Benachrichtigungen, ${unreadCount} ungelesen` : 'Benachrichtigungen'}
+            >
               <Badge badgeContent={unreadCount > 0 ? unreadCount : undefined} color="error">
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} onClick={() => navigate('/eltern/profil')} />
+            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} alt={profile?.name ?? 'Profil'} onClick={() => navigate('/eltern/profil')} />
           </Toolbar>
         </AppBar>
 
         {/* Scrollable content area */}
-        <Box sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <Box component="main" id="main-content" sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <Outlet />
         </Box>
 

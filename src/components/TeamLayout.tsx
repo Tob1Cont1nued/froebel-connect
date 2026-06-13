@@ -168,16 +168,16 @@ export default function TeamLayout() {
               {currentLabel}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton color="inherit" size="small" sx={{ mr: 0.5 }}>
+            <IconButton color="inherit" size="small" sx={{ mr: 0.5 }} aria-label="Benachrichtigungen, 3 ungelesen">
               <Badge badgeContent={3} color="error">
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} onClick={() => navigate('/team/profil')} />
+            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} alt={profile?.name ?? 'Profil'} onClick={() => navigate('/team/profil')} />
           </Toolbar>
         </AppBar>
 
-        <Box sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <Box component="main" id="main-content" sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <Outlet />
         </Box>
 

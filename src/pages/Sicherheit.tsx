@@ -66,7 +66,7 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
   return (
     <Box sx={{ p: 2, maxWidth: 560, mx: 'auto', width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <IconButton onClick={() => navigate(backPath)} size="small">
+        <IconButton onClick={() => navigate(backPath)} size="small" aria-label="Zurück">
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h6" sx={{ fontWeight: 700 }}>Datenschutz & Sicherheit</Typography>
@@ -175,6 +175,7 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
             fullWidth
             size="small"
             placeholder="LÖSCHEN"
+            inputProps={{ 'aria-label': 'Zur Bestätigung LÖSCHEN eingeben' }}
             value={deleteConfirmText}
             onChange={(e) => setDeleteConfirmText(e.target.value)}
             autoComplete="off"
