@@ -55,7 +55,7 @@ export default function Mehr() {
         { icon: <LanguageIcon />, label: 'Sprache', desc: 'Deutsch (DE) · 29 weitere verfügbar', action: () => {} },
         { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => {} },
         { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: profile?.email ?? '', action: () => {} },
-        { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => {} },
+        { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => navigate('/eltern/sicherheit') },
       ],
     },
     {

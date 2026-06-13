@@ -2,11 +2,17 @@ import { Navigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useAuth } from '../context/AuthContext';
+import { useIdleLogout } from '../hooks/useIdleLogout';
 import type { Role } from '../lib/database.types';
 
 interface Props {
   children: React.ReactNode;
   role: Role;
+}
+
+function IdleLogoutWatcher() {
+  useIdleLogout();
+  return null;
 }
 
 export default function ProtectedRoute({ children, role }: Props) {
@@ -29,5 +35,5 @@ export default function ProtectedRoute({ children, role }: Props) {
     return <Navigate to={redirect} replace />;
   }
 
-  return <>{children}</>;
+  return <><IdleLogoutWatcher />{children}</>;
 }

@@ -22,6 +22,8 @@ import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
 import ComingSoon from './pages/ComingSoon';
 import ErrorPage from './pages/ErrorPage';
+import Datenschutz from './pages/Datenschutz';
+import Sicherheit from './pages/Sicherheit';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace />, errorElement: <ErrorPage /> },
@@ -46,6 +48,8 @@ export const router = createBrowserRouter([
       { path: 'portfolio', element: <Portfolio /> },
       { path: 'dokumente', element: <Dokumente /> },
       { path: 'mehr', element: <Mehr /> },
+      { path: 'datenschutz', element: <Datenschutz backPath="/eltern/mehr" /> },
+      { path: 'sicherheit', element: <Sicherheit backPath="/eltern/mehr" /> },
     ],
   },
   {
@@ -67,6 +71,8 @@ export const router = createBrowserRouter([
       { path: 'dienstplan', element: <TeamDienstplan /> },
       { path: 'mehr', element: <TeamMehr /> },
       { path: 'profil', element: <TeamProfil /> },
+      { path: 'datenschutz', element: <Datenschutz backPath="/team/mehr" /> },
+      { path: 'sicherheit', element: <Sicherheit backPath="/team/mehr" /> },
     ],
   },
   {
