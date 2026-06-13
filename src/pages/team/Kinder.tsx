@@ -17,7 +17,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
-import { useChildren, type ChildItem } from '../../hooks/useChildren';
+import { useKitaChildren as useChildren } from '../../hooks/useKitaChildren';
+import type { ChildItem } from '../../hooks/useChildren';
 import { useKitaAbsences } from '../../hooks/useKitaAbsences';
 import { usePortfolio } from '../../hooks/usePortfolio';
 

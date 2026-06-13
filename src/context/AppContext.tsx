@@ -118,6 +118,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!session) return null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = supabase as any;
+
+    // Bestehende Konversation zwischen den beiden suchen
+    const { data: myConvs } = await sb
+      .from('conversation_participants')
+      .select('conversation_id')
+      .eq('profile_id', session.user.id);
+    const myConvIds = (myConvs ?? []).map((r: any) => r.conversation_id);
+
+    if (myConvIds.length > 0) {
+      const { data: shared } = await sb
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('profile_id', recipientId)
+        .in('conversation_id', myConvIds)
+        .limit(1);
+      if (shared && shared.length > 0) {
+        const existingId = shared[0].conversation_id;
+        await sb.from('messages').insert({ conversation_id: existingId, sender_id: session.user.id, text: firstMessage });
+        setConversations((prev) => prev.map((c) => c.id === existingId ? { ...c, preview: firstMessage, lastMessage: new Date() } : c));
+        return existingId;
+      }
+    }
+
+    // Neue Konversation erstellen
     const convId = crypto.randomUUID();
     const { error } = await sb.from('conversations').insert({ id: convId, subject: subject || null });
     if (error) {
@@ -133,7 +157,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return null;
     }
     await sb.from('messages').insert({ conversation_id: convId, sender_id: session.user.id, text: firstMessage });
-    // Optimistic update — sufficient for current session; reloads on next login
     setConversations((prev) => [{
       id: convId,
       from: recipientName,
