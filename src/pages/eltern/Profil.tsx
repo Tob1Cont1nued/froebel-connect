@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -24,11 +23,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useChildren } from '../../hooks/useChildren';
 import { useAbsences } from '../../hooks/useAbsences';
 import AvatarPicker from '../../components/AvatarPicker';
+import ChildAvatarPicker from '../../components/ChildAvatarPicker';
 
 export default function ElternProfil() {
   const navigate = useNavigate();
   const { profile, signOut, updateProfile } = useAuth();
-  const { children } = useChildren();
+  const { children, refetch: refetchChildren } = useChildren();
   const { absences } = useAbsences();
 
   const today = new Date().toISOString().split('T')[0];
@@ -140,9 +140,16 @@ export default function ElternProfil() {
                 <Box key={child.id}>
                   {i > 0 && <Divider variant="inset" component="li" />}
                   <ListItem sx={{ py: 1.25 }}>
-                    <ListItemIcon sx={{ minWidth: 40 }}>
-                      <Avatar sx={{ width: 30, height: 30, fontSize: 16, bgcolor: 'grey.100' }}>{child.emoji}</Avatar>
-                    </ListItemIcon>
+                    <Box sx={{ mr: 1.5, flexShrink: 0 }}>
+                      <ChildAvatarPicker
+                        childId={child.id}
+                        emoji={child.emoji}
+                        photoUrl={child.photo_url}
+                        name={child.name}
+                        size={36}
+                        onSaved={refetchChildren}
+                      />
+                    </Box>
                     <ListItemText
                       primary={child.name}
                       secondary={(() => {

@@ -36,6 +36,7 @@ export interface Database {
           name: string;
           age: number | null;
           emoji: string;
+          photo_url: string | null;
           kita_id: string | null;
           created_at: string;
         };

@@ -13,7 +13,7 @@ export function useKitaChildren() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from('children')
-      .select('id, name, age, emoji, kita_id, kitas(name)')
+      .select('id, name, age, emoji, photo_url, kita_id, kitas(name)')
       .eq('kita_id', profile.kita_id)
       .order('name')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,6 +24,7 @@ export function useKitaChildren() {
             name: c.name,
             age: c.age,
             emoji: c.emoji ?? '🌻',
+            photo_url: c.photo_url ?? null,
             kita_id: c.kita_id,
             kita_name: c.kitas?.name ?? null,
           }))

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +7,7 @@ export interface ChildItem {
   name: string;
   age: number | null;
   emoji: string;
+  photo_url: string | null;
   kita_id: string | null;
   kita_name: string | null;
 }
@@ -16,12 +17,12 @@ export function useChildren() {
   const [children, setChildren] = useState<ChildItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!session) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from('parent_children')
-      .select('children(id, name, age, emoji, kita_id, kitas(name))')
+      .select('children(id, name, age, emoji, photo_url, kita_id, kitas(name))')
       .eq('parent_id', session.user.id)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then(({ data }: { data: any[] | null }) => {
@@ -33,6 +34,7 @@ export function useChildren() {
               name: c.name,
               age: c.age,
               emoji: c.emoji ?? '🌻',
+              photo_url: c.photo_url ?? null,
               kita_id: c.kita_id,
               kita_name: c.kitas?.name ?? null,
             };
@@ -42,5 +44,7 @@ export function useChildren() {
       });
   }, [session?.user.id]);
 
-  return { children, firstChild: children[0] ?? null, loading };
+  useEffect(() => { load(); }, [load]);
+
+  return { children, firstChild: children[0] ?? null, loading, refetch: load };
 }
