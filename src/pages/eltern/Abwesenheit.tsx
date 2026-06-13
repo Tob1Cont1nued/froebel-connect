@@ -12,114 +12,79 @@ import Alert from '@mui/material/Alert';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
-import { useApp } from '../../context/AppContext';
-import { currentChild } from '../../mockData';
+import { useAbsences } from '../../hooks/useAbsences';
+import { useChildren } from '../../hooks/useChildren';
 
 const reasons = ['Krankheit', 'Arzttermin', 'Urlaub / Familienzeit', 'Persönliche Gründe', 'Sonstiges'];
 
 export default function Abwesenheit() {
-  const { absences, addAbsence } = useApp();
+  const { firstChild, loading: childLoading } = useChildren();
+  const { absences, addAbsence, loading } = useAbsences();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [reason, setReason] = useState('');
   const [note, setNote] = useState('');
   const [snackbar, setSnackbar] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (!from || !reason) return;
-    addAbsence({
+  const handleSubmit = async () => {
+    if (!from || !reason || !firstChild) return;
+    setSubmitting(true);
+    await addAbsence({
+      childId: firstChild.id,
       from: new Date(from),
       to: to ? new Date(to) : new Date(from),
       reason,
       note: note || undefined,
-      status: 'pending',
     });
-    setFrom('');
-    setTo('');
-    setReason('');
-    setNote('');
+    setFrom(''); setTo(''); setReason(''); setNote('');
     setSnackbar(true);
+    setSubmitting(false);
   };
+
+  if (childLoading || loading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 6 }}>
+      <CircularProgress />
+    </Box>
+  );
 
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 900 }, mx: 'auto', width: '100%' }}>
-      <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
-        Abwesenheit melden
-      </Typography>
+      <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>Abwesenheit melden</Typography>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <EventBusyIcon color="secondary" />
             <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-              {currentChild.name} – {currentChild.kita}
+              {firstChild ? `${firstChild.name} – ${firstChild.kita_name ?? 'Kita'}` : 'Kind wird geladen …'}
             </Typography>
           </Box>
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-            <TextField
-              label="Abwesend ab"
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              slotProps={{ inputLabel: { shrink: true } }}
-              fullWidth
-              size="small"
-            />
-            <TextField
-              label="Abwesend bis"
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: from } }}
-              fullWidth
-              size="small"
-              helperText="leer = gleicher Tag"
-            />
+            <TextField label="Abwesend ab" type="date" value={from} onChange={(e) => setFrom(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }} fullWidth size="small" />
+            <TextField label="Abwesend bis" type="date" value={to} onChange={(e) => setTo(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: from } }} fullWidth size="small" helperText="leer = gleicher Tag" />
           </Box>
 
-          <TextField
-            select
-            label="Grund"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            fullWidth
-            size="small"
-            sx={{ mb: 2 }}
-          >
-            {reasons.map((r) => (
-              <MenuItem key={r} value={r}>{r}</MenuItem>
-            ))}
+          <TextField select label="Grund" value={reason} onChange={(e) => setReason(e.target.value)} fullWidth size="small" sx={{ mb: 2 }}>
+            {reasons.map((r) => <MenuItem key={r} value={r}>{r}</MenuItem>)}
           </TextField>
 
-          <TextField
-            label="Anmerkung (optional)"
-            multiline
-            rows={3}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            fullWidth
-            size="small"
-            placeholder="z. B. Symptome, Arztbesuch geplant …"
-            sx={{ mb: 2 }}
-          />
+          <TextField label="Anmerkung (optional)" multiline rows={3} value={note} onChange={(e) => setNote(e.target.value)}
+            fullWidth size="small" placeholder="z. B. Symptome, Arztbesuch geplant …" sx={{ mb: 2 }} />
 
-          <Button
-            variant="contained"
-            fullWidth
-            size="large"
-            disabled={!from || !reason}
-            onClick={handleSubmit}
-            sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}
-          >
-            Abwesenheit melden
+          <Button variant="contained" fullWidth size="large" disabled={!from || !reason || submitting} onClick={handleSubmit}
+            sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}>
+            {submitting ? <CircularProgress size={22} sx={{ color: '#1A3545' }} /> : 'Abwesenheit melden'}
           </Button>
         </CardContent>
       </Card>
 
-      {/* History */}
       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
         Gemeldete Abwesenheiten ({absences.length})
       </Typography>
@@ -141,19 +106,12 @@ export default function Abwesenheit() {
                         ? a.from.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })
                         : `${a.from.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} – ${a.to.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`}
                     </Typography>
-                    {a.note && (
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>
-                        {a.note}
-                      </Typography>
-                    )}
+                    {a.note && <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>{a.note}</Typography>}
                   </Box>
-                  <Chip
-                    label={a.status === 'confirmed' ? 'Bestätigt' : 'Ausstehend'}
-                    size="small"
+                  <Chip label={a.status === 'confirmed' ? 'Bestätigt' : 'Ausstehend'} size="small"
                     color={a.status === 'confirmed' ? 'success' : 'warning'}
                     icon={a.status === 'confirmed' ? <CheckCircleOutlinedIcon /> : undefined}
-                    variant={a.status === 'confirmed' ? 'filled' : 'outlined'}
-                  />
+                    variant={a.status === 'confirmed' ? 'filled' : 'outlined'} />
                 </ListItem>
               </Box>
             ))}
@@ -161,12 +119,7 @@ export default function Abwesenheit() {
         )}
       </Card>
 
-      <Snackbar
-        open={snackbar}
-        autoHideDuration={3500}
-        onClose={() => setSnackbar(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
+      <Snackbar open={snackbar} autoHideDuration={3500} onClose={() => setSnackbar(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity="success" onClose={() => setSnackbar(false)} sx={{ width: '100%' }}>
           Abwesenheit wurde gemeldet und an das Kita-Team weitergeleitet.
         </Alert>

@@ -22,7 +22,6 @@ import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { mockUsers } from '../mockData';
 
 const DRAWER_WIDTH = 240;
 
@@ -37,8 +36,8 @@ const navItems = [
 export default function TraegerLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signOut } = useAuth();
-  const user = mockUsers.traeger;
+  const { signOut, profile } = useAuth();
+  const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebar = (
@@ -82,11 +81,11 @@ export default function TraegerLayout() {
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
           <Avatar sx={{ width: 32, height: 32, bgcolor: '#95C11F', color: '#1A3545', fontSize: 13, fontWeight: 700 }}>
-            {user.avatar}
+            {avatarInitials}
           </Avatar>
           <Box>
             <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', color: 'white' }}>
-              {user.name}
+              {profile?.name ?? ''}
             </Typography>
             <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
               Träger-Admin

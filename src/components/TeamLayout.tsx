@@ -25,7 +25,6 @@ import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import { mockUsers } from '../mockData';
 
 const DRAWER_WIDTH = 240;
 
@@ -40,8 +39,8 @@ const navItems = [
 export default function TeamLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signOut } = useAuth();
-  const user = mockUsers.fachkraft;
+  const { signOut, profile } = useAuth();
+  const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   const navValue = navItems.findIndex((item) => location.pathname.startsWith(item.path));
   const currentLabel = navValue >= 0 ? navItems[navValue].label : '';
@@ -92,11 +91,11 @@ export default function TeamLayout() {
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Avatar sx={{ width: 36, height: 36, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
-            {user.avatar}
+            {avatarInitials}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }} noWrap>
-              {user.name}
+              {profile?.name ?? ''}
             </Typography>
             <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
               Fachkraft
@@ -174,7 +173,7 @@ export default function TeamLayout() {
               </Badge>
             </IconButton>
             <Avatar sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
-              {user.avatar}
+              {avatarInitials}
             </Avatar>
           </Toolbar>
         </AppBar>

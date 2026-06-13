@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -18,6 +18,16 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+
+  // Sobald das Profil geladen ist und ein Login lief → weiterleiten
+  useEffect(() => {
+    if (pendingRedirect && profile) {
+      if (profile.role === 'fachkraft') navigate('/team/dashboard');
+      else if (profile.role === 'traeger') navigate('/traeger/dashboard');
+      else navigate('/eltern/dashboard');
+    }
+  }, [pendingRedirect, profile, navigate]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -32,14 +42,7 @@ export default function Login() {
       setLoading(false);
       return;
     }
-    // Nach Login: zur passenden Startseite weiterleiten
-    // profile wird kurz nach signIn geladen — kurz warten
-    setTimeout(() => {
-      const role = profile?.role;
-      if (role === 'fachkraft') navigate('/team/dashboard');
-      else if (role === 'traeger') navigate('/traeger/dashboard');
-      else navigate('/eltern/dashboard');
-    }, 300);
+    setPendingRedirect(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

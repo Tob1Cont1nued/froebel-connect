@@ -16,13 +16,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import { useAuth } from '../context/AuthContext';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import { mockUsers } from '../mockData';
 import { useApp } from '../context/AppContext';
 
 const DRAWER_WIDTH = 240;
@@ -38,8 +40,9 @@ const navItems = [
 export default function ElternLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = mockUsers.eltern;
+  const { signOut, profile } = useAuth();
   const { unreadCount } = useApp();
+  const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   const navValue = navItems.findIndex((item) => location.pathname.startsWith(item.path));
   const currentLabel = navValue >= 0 ? navItems[navValue].label : '';
@@ -90,17 +93,26 @@ export default function ElternLayout() {
           onClick={() => navigate('/eltern/mehr')}
         >
           <Avatar sx={{ width: 36, height: 36, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700 }}>
-            {user.avatar}
+            {avatarInitials}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }} noWrap>
-              {user.name}
+              {profile?.name ?? ''}
             </Typography>
             <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
               Eltern-Account
             </Typography>
           </Box>
         </Box>
+        <Button
+          startIcon={<LogoutIcon />}
+          size="small"
+          fullWidth
+          sx={{ mt: 1, color: 'rgba(255,255,255,0.65)', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
+          onClick={async () => { await signOut(); navigate('/login'); }}
+        >
+          Abmelden
+        </Button>
       </Box>
     </Box>
   );
@@ -154,7 +166,7 @@ export default function ElternLayout() {
               sx={{ width: 34, height: 34, bgcolor: '#95C11F', color: '#1A3545', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
               onClick={() => navigate('/eltern/mehr')}
             >
-              {user.avatar}
+              {avatarInitials}
             </Avatar>
           </Toolbar>
         </AppBar>
