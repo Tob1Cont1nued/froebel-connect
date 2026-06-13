@@ -119,7 +119,7 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
             variant="contained"
             onClick={handlePasswordChange}
             disabled={pwLoading || !newPassword || !confirmPassword}
-            sx={{ alignSelf: 'flex-end', bgcolor: '#1A3545', '&:hover': { bgcolor: '#2D5468' } }}
+            sx={{ alignSelf: 'flex-end', bgcolor: '#95C11F', color: '#1A3545', fontWeight: 700, '&:hover': { bgcolor: '#7EA819' } }}
           >
             {pwLoading ? 'Speichern…' : 'Passwort speichern'}
           </Button>
