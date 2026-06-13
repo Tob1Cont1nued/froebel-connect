@@ -93,7 +93,7 @@ export default function TeamNachrichtenDetail() {
         <TextField
           multiline maxRows={4} fullWidth size="small" placeholder="Nachricht schreiben …"
           value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-          inputProps={{ 'aria-label': 'Nachricht schreiben' }}
+          slotProps={{ htmlInput: { 'aria-label': 'Nachricht schreiben' } }}
           sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
         />
         <IconButton

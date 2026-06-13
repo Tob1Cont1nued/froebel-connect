@@ -175,7 +175,7 @@ export default function Sicherheit({ backPath }: { backPath: string }) {
             fullWidth
             size="small"
             placeholder="LÖSCHEN"
-            inputProps={{ 'aria-label': 'Zur Bestätigung LÖSCHEN eingeben' }}
+            slotProps={{ htmlInput: { 'aria-label': 'Zur Bestätigung LÖSCHEN eingeben' } }}
             value={deleteConfirmText}
             onChange={(e) => setDeleteConfirmText(e.target.value)}
             autoComplete="off"

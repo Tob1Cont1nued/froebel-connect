@@ -90,7 +90,7 @@ export default function NachrichtenDetail() {
       <Paper elevation={2} sx={{ p: 1.5, display: 'flex', gap: 1, alignItems: 'flex-end', borderRadius: 0, flexShrink: 0 }}>
         <TextField multiline maxRows={4} fullWidth size="small" placeholder="Nachricht schreiben …"
           value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-          inputProps={{ 'aria-label': 'Nachricht schreiben' }}
+          slotProps={{ htmlInput: { 'aria-label': 'Nachricht schreiben' } }}
           sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }} />
         <IconButton onClick={handleSend} disabled={!input.trim()} aria-label="Nachricht senden"
           sx={{ bgcolor: '#95C11F', color: '#1A3545', '&:hover': { bgcolor: '#6B8A15', color: 'white' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground' } }}>
