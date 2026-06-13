@@ -18,6 +18,7 @@ interface AppContextType {
   loading: boolean;
   sendMessage: (convId: string, text: string) => Promise<void>;
   markAsRead: (convId: string) => Promise<void>;
+  createConversation: (recipientId: string, recipientName: string, subject: string | null, firstMessage: string) => Promise<string | null>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -113,8 +114,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setConversations((prev) => prev.map((c) => c.id === convId ? { ...c, unread: 0 } : c));
   };
 
+  const createConversation = async (recipientId: string, recipientName: string, subject: string | null, firstMessage: string): Promise<string | null> => {
+    if (!session) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = supabase as any;
+    const convId = crypto.randomUUID();
+    const { error } = await sb.from('conversations').insert({ id: convId, subject: subject || null });
+    if (error) {
+      console.error('createConversation: INSERT conversations failed', error);
+      return null;
+    }
+    const { error: partError } = await sb.from('conversation_participants').insert([
+      { conversation_id: convId, profile_id: session.user.id, unread_count: 0 },
+      { conversation_id: convId, profile_id: recipientId, unread_count: 1 },
+    ]);
+    if (partError) {
+      console.error('createConversation: INSERT participants failed', partError);
+      return null;
+    }
+    await sb.from('messages').insert({ conversation_id: convId, sender_id: session.user.id, text: firstMessage });
+    // Optimistic update — sufficient for current session; reloads on next login
+    setConversations((prev) => [{
+      id: convId,
+      from: recipientName,
+      fromRole: roleLabel['fachkraft'],
+      avatar: initials(recipientName),
+      preview: firstMessage,
+      lastMessage: new Date(),
+      unread: 0,
+    }, ...prev]);
+    return convId;
+  };
+
   return (
-    <AppContext.Provider value={{ conversations, unreadCount, loading, sendMessage, markAsRead }}>
+    <AppContext.Provider value={{ conversations, unreadCount, loading, sendMessage, markAsRead, createConversation }}>
       {children}
     </AppContext.Provider>
   );

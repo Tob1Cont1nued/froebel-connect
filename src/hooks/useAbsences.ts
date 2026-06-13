@@ -9,11 +9,22 @@ export interface AbsenceItem {
   reason: string;
   note: string | null;
   status: 'pending' | 'confirmed';
+  childName: string | null;
+  childEmoji: string | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toItem(a: any): AbsenceItem {
-  return { id: a.id, from: new Date(a.from_date), to: new Date(a.to_date), reason: a.reason, note: a.note, status: a.status };
+  return {
+    id: a.id,
+    from: new Date(a.from_date),
+    to: new Date(a.to_date),
+    reason: a.reason,
+    note: a.note,
+    status: a.status,
+    childName: a.children?.name ?? null,
+    childEmoji: a.children?.emoji ?? null,
+  };
 }
 
 export function useAbsences() {
@@ -23,7 +34,8 @@ export function useAbsences() {
 
   async function load() {
     if (!session) return;
-    const { data } = await supabase.from('absences').select('*').order('created_at', { ascending: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any).from('absences').select('*, children(name, emoji)').order('from_date', { ascending: true });
     setAbsences(((data as any[]) ?? []).map(toItem));
     setLoading(false);
   }

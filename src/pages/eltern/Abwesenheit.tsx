@@ -21,8 +21,9 @@ import { useChildren } from '../../hooks/useChildren';
 const reasons = ['Krankheit', 'Arzttermin', 'Urlaub / Familienzeit', 'Persönliche Gründe', 'Sonstiges'];
 
 export default function Abwesenheit() {
-  const { firstChild, loading: childLoading } = useChildren();
+  const { children, firstChild, loading: childLoading } = useChildren();
   const { absences, addAbsence, loading } = useAbsences();
+  const [selectedChildId, setSelectedChildId] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [reason, setReason] = useState('');
@@ -30,11 +31,13 @@ export default function Abwesenheit() {
   const [snackbar, setSnackbar] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const selectedChild = children.find((c) => c.id === selectedChildId) ?? firstChild;
+
   const handleSubmit = async () => {
-    if (!from || !reason || !firstChild) return;
+    if (!from || !reason || !selectedChild) return;
     setSubmitting(true);
     await addAbsence({
-      childId: firstChild.id,
+      childId: selectedChild.id,
       from: new Date(from),
       to: to ? new Date(to) : new Date(from),
       reason,
@@ -59,10 +62,33 @@ export default function Abwesenheit() {
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <EventBusyIcon color="secondary" />
-            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-              {firstChild ? `${firstChild.name} – ${firstChild.kita_name ?? 'Kita'}` : 'Kind wird geladen …'}
-            </Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Abwesenheit melden</Typography>
           </Box>
+
+          {/* Kind-Auswahl – nur bei mehreren Kindern */}
+          {children.length > 1 && (
+            <TextField
+              select
+              label="Kind"
+              value={selectedChildId || selectedChild?.id || ''}
+              onChange={(e) => setSelectedChildId(e.target.value)}
+              fullWidth
+              size="small"
+              sx={{ mb: 2 }}
+            >
+              {children.map((c) => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.emoji} {c.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+
+          {children.length === 1 && firstChild && (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {firstChild.emoji} {firstChild.name} – {firstChild.kita_name ?? 'Kita'}
+            </Typography>
+          )}
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
             <TextField label="Abwesend ab" type="date" value={from} onChange={(e) => setFrom(e.target.value)}

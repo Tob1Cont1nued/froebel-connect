@@ -16,11 +16,8 @@ export function useMessages(convId: string | undefined) {
   const [loading, setLoading] = useState(true);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  useEffect(() => {
+  function fetchMessages() {
     if (!convId || !session) return;
-    setLoading(true);
-    setMessages([]);
-
     supabase
       .from('messages')
       .select('id, text, created_at, sender_id, profiles(name)')
@@ -39,6 +36,14 @@ export function useMessages(convId: string | undefined) {
         );
         setLoading(false);
       });
+  }
+
+  useEffect(() => {
+    if (!convId || !session) return;
+    setLoading(true);
+    setMessages([]);
+
+    fetchMessages();
 
     channelRef.current = supabase
       .channel(`conv-${convId}`)
@@ -59,5 +64,5 @@ export function useMessages(convId: string | undefined) {
     return () => { if (channelRef.current) supabase.removeChannel(channelRef.current); };
   }, [convId, session?.user.id]);
 
-  return { messages, loading };
+  return { messages, loading, refetch: fetchMessages };
 }

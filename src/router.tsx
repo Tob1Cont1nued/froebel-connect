@@ -12,6 +12,11 @@ import Mehr from './pages/eltern/Mehr';
 import Dokumente from './pages/eltern/Dokumente';
 import TeamLayout from './components/TeamLayout';
 import TeamDashboard from './pages/team/Dashboard';
+import TeamKinder from './pages/team/Kinder';
+import TeamDienstplan from './pages/team/Dienstplan';
+import TeamProfil from './pages/team/Profil';
+import TeamNachrichten, { EmptyState as TeamNachrichtenEmpty } from './pages/team/Nachrichten';
+import TeamNachrichtenDetail from './pages/team/NachrichtenDetail';
 import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
@@ -47,10 +52,18 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <TeamDashboard /> },
-      { path: 'nachrichten', element: <ComingSoon title="Team-Nachrichten" /> },
-      { path: 'kinder', element: <ComingSoon title="Kinderverwaltung" /> },
-      { path: 'dienstplan', element: <ComingSoon title="Dienstplan" /> },
+      {
+        path: 'nachrichten',
+        element: <TeamNachrichten />,
+        children: [
+          { index: true, element: <TeamNachrichtenEmpty /> },
+          { path: ':convId', element: <TeamNachrichtenDetail /> },
+        ],
+      },
+      { path: 'kinder', element: <TeamKinder /> },
+      { path: 'dienstplan', element: <TeamDienstplan /> },
       { path: 'mehr', element: <TeamMehr /> },
+      { path: 'profil', element: <TeamProfil /> },
     ],
   },
   {

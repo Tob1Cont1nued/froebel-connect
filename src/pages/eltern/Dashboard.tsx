@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useChildren } from '../../hooks/useChildren';
 import { useAppointments } from '../../hooks/useAppointments';
+import { useAbsences } from '../../hooks/useAbsences';
 
 const appointmentColors = {
   event: '#1565C0', closure: '#C62828', meeting: '#2E7D32', info: '#E65100',
@@ -28,14 +29,17 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { conversations } = useApp();
-  const { firstChild, loading: childLoading } = useChildren();
+  const { children, firstChild, loading: childLoading } = useChildren();
   const { appointments, loading: aptLoading } = useAppointments();
+  const { absences } = useAbsences();
 
   const today = new Date();
   const greeting = today.getHours() < 12 ? 'Guten Morgen' : today.getHours() < 17 ? 'Guten Tag' : 'Guten Abend';
   const firstName = profile?.name?.split(' ')[0] ?? '';
 
   const nextAppointments = appointments.filter((a) => a.date >= today).slice(0, 4);
+  const todayStr = today.toISOString().split('T')[0];
+  const activeAbsences = absences.filter((a) => a.to >= today || a.from.toISOString().split('T')[0] >= todayStr);
   const unreadConversations = conversations.filter((c) => c.unread > 0);
 
   if (childLoading) return (
@@ -51,16 +55,23 @@ export default function Dashboard() {
         <CardContent sx={{ pb: '16px !important' }}>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>{greeting},</Typography>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>{firstName} 👋</Typography>
-          {firstChild && (
+          {children.length > 0 && (
             <>
               <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box sx={{ fontSize: 36 }}>{firstChild.emoji}</Box>
-                <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{firstChild.name}</Typography>
-                  {firstChild.kita_name && <Typography variant="body2" sx={{ opacity: 0.8 }}>{firstChild.kita_name}</Typography>}
-                </Box>
-                <Chip label="Anwesend" size="small" sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }} />
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {children.map((child, i) => (
+                  <Box key={child.id}>
+                    {i > 0 && <Divider sx={{ mb: 1, borderColor: 'rgba(255,255,255,0.1)' }} />}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box sx={{ fontSize: 32 }}>{child.emoji}</Box>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{child.name}</Typography>
+                        {child.kita_name && <Typography variant="body2" sx={{ opacity: 0.8 }}>{child.kita_name}</Typography>}
+                      </Box>
+                      <Chip label="Anwesend" size="small" sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }} />
+                    </Box>
+                  </Box>
+                ))}
               </Box>
             </>
           )}
@@ -81,6 +92,43 @@ export default function Dashboard() {
               Nachricht senden
             </Button>
           </Box>
+
+          {activeAbsences.length > 0 && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent sx={{ pb: '8px !important' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    <EventBusyIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle', color: '#E65100' }} />
+                    Gemeldete Abwesenheiten
+                  </Typography>
+                  <Button size="small" endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />} onClick={() => navigate('/eltern/abwesenheit')}>Alle</Button>
+                </Box>
+                {activeAbsences.slice(0, 3).map((a, i) => (
+                  <Box key={a.id}>
+                    {i > 0 && <Divider sx={{ my: 0.5 }} />}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, px: 1, borderRadius: 2 }}>
+                      <Box sx={{ fontSize: 20 }}>{a.childEmoji ?? '👶'}</Box>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {a.childName ?? ''} · {a.reason}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {a.from.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })}
+                          {a.from.toDateString() !== a.to.toDateString() && ` – ${a.to.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })}`}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={a.status === 'confirmed' ? 'Bestätigt' : 'Ausstehend'}
+                        size="small"
+                        color={a.status === 'confirmed' ? 'success' : 'warning'}
+                        variant={a.status === 'confirmed' ? 'filled' : 'outlined'}
+                      />
+                    </Box>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {unreadConversations.length > 0 && (
             <Card>
@@ -107,13 +155,16 @@ export default function Dashboard() {
 
         {/* Rechte Spalte */}
         <Grid size={{ xs: 12, md: 5 }}>
+          <Box sx={{ height: 20, mb: 1 }} /> {/* Platzhalter für "Schnellzugriff"-Label */}
           <Card>
             <CardContent sx={{ pb: '8px !important' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>📅 Nächste Termine</Typography>
                 <Button size="small" endIcon={<ArrowForwardIosIcon sx={{ fontSize: 12 }} />} onClick={() => navigate('/eltern/termine')}>Alle</Button>
               </Box>
-              {aptLoading ? <CircularProgress size={20} sx={{ m: 1 }} /> : nextAppointments.map((apt, i) => (
+              {aptLoading ? <CircularProgress size={20} sx={{ m: 1 }} /> : nextAppointments.length === 0 ? (
+                <Typography variant="body2" color="text.disabled" sx={{ py: 1, px: 1 }}>Keine bevorstehenden Termine.</Typography>
+              ) : nextAppointments.map((apt, i) => (
                 <Box key={apt.id}>
                   {i > 0 && <Divider sx={{ my: 0.5 }} />}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, px: 1, borderRadius: 2 }}>

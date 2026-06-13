@@ -12,6 +12,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  updateProfile: (fields: Partial<Pick<Profile, 'name'>>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -63,8 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const updateProfile = async (fields: Partial<Pick<Profile, 'name'>>) => {
+    if (!user) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('profiles').update(fields).eq('id', user.id);
+    setProfile((prev) => prev ? { ...prev, ...fields } : prev);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, session, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, session, loading, signIn, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

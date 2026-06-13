@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useApp } from '../context/AppContext';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -30,7 +31,7 @@ const DRAWER_WIDTH = 240;
 
 const navItems = [
   { label: 'Dashboard', icon: <HomeOutlinedIcon />, path: '/team/dashboard' },
-  { label: 'Nachrichten', icon: <ChatBubbleOutlinedIcon />, path: '/team/nachrichten', badge: 2 },
+  { label: 'Nachrichten', icon: <ChatBubbleOutlinedIcon />, path: '/team/nachrichten' },
   { label: 'Kinder', icon: <PeopleOutlinedIcon />, path: '/team/kinder' },
   { label: 'Dienstplan', icon: <CalendarTodayOutlinedIcon />, path: '/team/dienstplan' },
   { label: 'Mehr', icon: <GridViewOutlinedIcon />, path: '/team/mehr' },
@@ -40,6 +41,7 @@ export default function TeamLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut, profile } = useAuth();
+  const { unreadCount } = useApp();
   const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   const navValue = navItems.findIndex((item) => location.pathname.startsWith(item.path));
@@ -74,8 +76,8 @@ export default function TeamLayout() {
                 }}
               >
                 <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
-                  {item.badge ? (
-                    <Badge badgeContent={item.badge} color="error">{item.icon}</Badge>
+                  {item.path === '/team/nachrichten' && unreadCount > 0 ? (
+                    <Badge badgeContent={unreadCount} color="error">{item.icon}</Badge>
                   ) : item.icon}
                 </ListItemIcon>
                 <ListItemText
@@ -192,7 +194,7 @@ export default function TeamLayout() {
               <BottomNavigationAction
                 key={item.path}
                 label={item.label}
-                icon={item.badge ? <Badge badgeContent={item.badge} color="error">{item.icon}</Badge> : item.icon}
+                icon={item.path === '/team/nachrichten' && unreadCount > 0 ? <Badge badgeContent={unreadCount} color="error">{item.icon}</Badge> : item.icon}
                 sx={{ minWidth: 0, '& .MuiBottomNavigationAction-label': { fontSize: 10 } }}
               />
             ))}

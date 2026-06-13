@@ -18,21 +18,25 @@ export function useChildren() {
 
   useEffect(() => {
     if (!session) return;
-    supabase
-      .from('children')
-      .select('id, name, age, emoji, kita_id, kitas(name)')
-      .order('name')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('parent_children')
+      .select('children(id, name, age, emoji, kita_id, kitas(name))')
+      .eq('parent_id', session.user.id)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then(({ data }) => {
+      .then(({ data }: { data: any[] | null }) => {
         setChildren(
-          ((data as any[]) ?? []).map((c) => ({
-            id: c.id,
-            name: c.name,
-            age: c.age,
-            emoji: c.emoji ?? '🌻',
-            kita_id: c.kita_id,
-            kita_name: c.kitas?.name ?? null,
-          }))
+          (data ?? []).map((row) => {
+            const c = row.children;
+            return {
+              id: c.id,
+              name: c.name,
+              age: c.age,
+              emoji: c.emoji ?? '🌻',
+              kita_id: c.kita_id,
+              kita_name: c.kitas?.name ?? null,
+            };
+          }).sort((a: ChildItem, b: ChildItem) => a.name.localeCompare(b.name))
         );
         setLoading(false);
       });

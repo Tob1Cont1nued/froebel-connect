@@ -18,14 +18,15 @@ export function useAppointments() {
 
   useEffect(() => {
     if (!session) return;
-    supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
       .from('appointments')
       .select('*')
+      .or(`parent_id.is.null,parent_id.eq.${session.user.id}`)
       .order('date', { ascending: true })
-      .then(({ data }) => {
+      .then(({ data }: { data: any[] | null }) => {
         setAppointments(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ((data as any[]) ?? []).map((a) => ({
+          (data ?? []).map((a) => ({
             id: a.id,
             title: a.title,
             date: new Date(a.date),
