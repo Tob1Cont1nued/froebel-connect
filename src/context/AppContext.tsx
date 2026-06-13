@@ -40,10 +40,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const unreadCount = conversations.reduce((sum, c) => sum + c.unread, 0);
 
-  async function loadConversations() {
+  async function loadConversations(initial = false) {
     if (!session) return;
     const userId = session.user.id;
-    setLoading(true);
+    if (initial) setLoading(true);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: mineRaw } = await (supabase as any)
@@ -52,7 +52,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .eq('profile_id', userId);
     const mine = (mineRaw ?? []) as Array<{ conversation_id: string; unread_count: number }>;
 
-    if (mine.length === 0) { setLoading(false); return; }
+    if (mine.length === 0) { if (initial) setLoading(false); return; }
     const convIds = mine.map((m) => m.conversation_id);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,12 +90,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
       })
     );
-    setLoading(false);
+    if (initial) setLoading(false);
   }
 
   useEffect(() => {
-    if (session) loadConversations();
-    else setConversations([]);
+    if (!session) { setConversations([]); return; }
+    loadConversations(true);
+    const interval = setInterval(loadConversations, 10000);
+    return () => clearInterval(interval);
   }, [session?.user.id]);
 
   const sendMessage = async (convId: string, text: string) => {
