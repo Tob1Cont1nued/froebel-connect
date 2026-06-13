@@ -14,7 +14,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { useApp } from '../../context/AppContext';
 
 export default function Nachrichten() {
@@ -49,7 +49,7 @@ export default function Nachrichten() {
                   onClick={(e) => { e.stopPropagation(); setConfirmId(conv.id); }}
                   sx={{ opacity: { xs: 1, md: 0 }, transition: 'opacity 0.15s', color: 'text.disabled', '&:hover': { color: 'error.main' } }}
                 >
-                  <DeleteOutlineIcon fontSize="small" />
+                  <DeleteOutlinedIcon fontSize="small" />
                 </IconButton>
               }
             >
