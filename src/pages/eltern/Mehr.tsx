@@ -7,7 +7,7 @@ import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-import Avatar from '@mui/material/Avatar';
+import ProfileAvatar from '../../components/ProfileAvatar';
 import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -71,7 +71,7 @@ export default function Mehr() {
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 900 }, mx: 'auto', width: '100%' }}>
       <Card sx={{ mb: 3, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Avatar sx={{ width: 56, height: 56, bgcolor: '#1A3545', fontSize: 20, fontWeight: 700 }}>{avatarInitials}</Avatar>
+        <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={56} alt={profile?.name ?? 'Profil'} />
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{profile?.name ?? ''}</Typography>
           {children.length > 0 && (
