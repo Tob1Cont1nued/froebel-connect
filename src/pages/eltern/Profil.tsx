@@ -22,6 +22,7 @@ import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../../context/AuthContext';
 import { useChildren } from '../../hooks/useChildren';
+import AvatarPicker from '../../components/AvatarPicker';
 
 export default function ElternProfil() {
   const navigate = useNavigate();
@@ -52,9 +53,9 @@ export default function ElternProfil() {
       {/* Header */}
       <Card sx={{ mb: 2.5, background: 'linear-gradient(135deg, #1A3545 0%, #2D5468 100%)', color: 'white' }}>
         <CardContent sx={{ textAlign: 'center', py: 3 }}>
-          <Avatar sx={{ width: 72, height: 72, fontSize: 28, fontWeight: 700, bgcolor: '#95C11F', color: '#1A3545', mx: 'auto', mb: 1.5 }}>
-            {avatarInitials}
-          </Avatar>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
+            <AvatarPicker size={72} initials={avatarInitials} />
+          </Box>
 
           {editing ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center', mt: 0.5 }}>
