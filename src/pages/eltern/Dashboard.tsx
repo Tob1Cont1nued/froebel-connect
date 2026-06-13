@@ -29,7 +29,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { conversations } = useApp();
-  const { children, firstChild, loading: childLoading } = useChildren();
+  const { children, loading: childLoading } = useChildren();
   const { appointments, loading: aptLoading } = useAppointments();
   const { absences } = useAbsences();
 
