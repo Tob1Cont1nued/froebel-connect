@@ -147,10 +147,16 @@ export default function ElternProfil() {
                       primary={child.name}
                       secondary={(() => {
                         const absentReason = absentTodayMap.get(child.id);
-                        const status = absentReason ? `Abwesend · ${absentReason}` : 'Anwesend';
-                        return child.age !== null ? `${child.age} Jahre · ${status}` : status;
+                        const statusLabel = absentReason ? `Abwesend · ${absentReason}` : 'Anwesend';
+                        const statusColor = absentReason ? 'warning.main' : 'success.main';
+                        return (
+                          <Box component="span" sx={{ display: 'inline' }}>
+                            {child.age !== null && <Box component="span" sx={{ color: 'text.secondary' }}>{child.age} Jahre · </Box>}
+                            <Box component="span" sx={{ color: statusColor, fontWeight: 500 }}>{statusLabel}</Box>
+                          </Box>
+                        );
                       })()}
-                      slotProps={{ primary: { variant: 'body2', sx: { fontWeight: 600 } }, secondary: { sx: { color: absentTodayMap.has(child.id) ? 'warning.main' : 'success.main', fontWeight: 500 } } }}
+                      slotProps={{ primary: { variant: 'body2', sx: { fontWeight: 600 } } }}
                     />
                   </ListItem>
                 </Box>
