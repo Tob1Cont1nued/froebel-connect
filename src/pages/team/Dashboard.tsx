@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -8,17 +8,29 @@ import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import SickIcon from '@mui/icons-material/Sick';
 import { useAuth } from '../../context/AuthContext';
 import { useKitaChildren as useChildren } from '../../hooks/useKitaChildren';
 import { useKitaAbsences } from '../../hooks/useKitaAbsences';
+import { useKrankmeldungen } from '../../hooks/useKrankmeldungen';
 
 export default function TeamDashboard() {
   const { profile } = useAuth();
   const { children, loading: childrenLoading } = useChildren();
   const { absences, loading: absencesLoading, confirmAbsence } = useKitaAbsences();
+  const { aktuellKrank, eigeneMeldung, melden, zurueckziehen } = useKrankmeldungen();
+  const [krankDialog, setKrankDialog] = useState(false);
+  const [krankForm, setKrankForm] = useState({ from_date: new Date().toISOString().split('T')[0], to_date: new Date().toISOString().split('T')[0], note: '' });
+  const [krankError, setKrankError] = useState('');
 
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
@@ -39,23 +51,100 @@ export default function TeamDashboard() {
   const absentCount = absentTodayMap.size;
   const loading = childrenLoading || absencesLoading;
 
+  const handleKrankMelden = async () => {
+    if (!krankForm.from_date || !krankForm.to_date) { setKrankError('Bitte Datum eingeben.'); return; }
+    if (krankForm.to_date < krankForm.from_date) { setKrankError('Enddatum muss nach dem Startdatum liegen.'); return; }
+    setKrankError('');
+    await melden(krankForm.from_date, krankForm.to_date, krankForm.note);
+    setKrankDialog(false);
+  };
+
   return (
     <Box sx={{ p: 2, maxWidth: { xs: 600, md: 900 }, mx: 'auto', width: '100%' }}>
       {/* Header */}
       <Card sx={{ mb: 2, background: 'linear-gradient(135deg, #1A3545 0%, #2D5468 100%)', color: 'white' }}>
         <CardContent sx={{ pb: '16px !important' }}>
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
-            {today.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Guten Morgen, {profile?.name?.split(' ')[0] ?? ''}!
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+            <Box>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                {today.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                Guten Morgen, {profile?.name?.split(' ')[0] ?? ''}!
+              </Typography>
+            </Box>
+            {eigeneMeldung ? (
+              <Chip
+                icon={<SickIcon sx={{ color: '#C2185B !important' }} />}
+                label="Krank gemeldet"
+                size="small"
+                onClick={() => zurueckziehen(eigeneMeldung.id)}
+                sx={{ bgcolor: 'rgba(194,24,91,0.2)', color: '#FCE4EC', fontWeight: 600, border: 'none', cursor: 'pointer', mt: 0.5 }}
+              />
+            ) : (
+              <Button
+                size="small"
+                startIcon={<SickIcon />}
+                onClick={() => { setKrankDialog(true); setKrankError(''); }}
+                sx={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.3)', border: '1px solid', borderRadius: 2, whiteSpace: 'nowrap', mt: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
+              >
+                Krank melden
+              </Button>
+            )}
+          </Box>
           <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            {kitaName}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>{kitaName}</Typography>
+            {aktuellKrank.length > 0 && (
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                {aktuellKrank.map((k) => (
+                  <Chip key={k.id} icon={<SickIcon sx={{ fontSize: '14px !important', color: '#FCE4EC !important' }} />}
+                    label={k.fachkraft_name.split(' ')[0]}
+                    size="small"
+                    sx={{ bgcolor: 'rgba(194,24,91,0.25)', color: '#FCE4EC', fontWeight: 600, border: 'none', fontSize: 11 }}
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
         </CardContent>
       </Card>
+
+      {/* Krank melden Dialog */}
+      <Dialog open={krankDialog} onClose={() => setKrankDialog(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <SickIcon color="error" /> Krank melden
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+          {krankError && <Alert severity="error">{krankError}</Alert>}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Von" type="date" fullWidth required
+              value={krankForm.from_date}
+              onChange={(e) => setKrankForm((f) => ({ ...f, from_date: e.target.value }))}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <TextField
+              label="Bis" type="date" fullWidth required
+              value={krankForm.to_date}
+              onChange={(e) => setKrankForm((f) => ({ ...f, to_date: e.target.value }))}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+          </Box>
+          <TextField
+            label="Notiz (optional)" multiline minRows={2} fullWidth
+            value={krankForm.note}
+            onChange={(e) => setKrankForm((f) => ({ ...f, note: e.target.value }))}
+            placeholder="z.B. Erkältung, Arzttermin …"
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setKrankDialog(false)}>Abbrechen</Button>
+          <Button variant="contained" color="error" onClick={handleKrankMelden} startIcon={<SickIcon />}>
+            Krank melden
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Stats */}
       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>

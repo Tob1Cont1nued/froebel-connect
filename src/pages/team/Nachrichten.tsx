@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import GroupsIcon from '@mui/icons-material/Groups';
 import { useApp } from '../../context/AppContext';
 
 function NachrichtenListe() {
@@ -23,6 +24,7 @@ function NachrichtenListe() {
   const { conversations, deleteConversation } = useApp();
   const matchDetail = useMatch('/team/nachrichten/:convId');
   const activeId = matchDetail?.params.convId;
+  const teamKanalActive = activeId === 'team-kanal';
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const handleDelete = async () => {
@@ -38,6 +40,28 @@ function NachrichtenListe() {
         <Typography variant="h6" sx={{ fontWeight: 700 }}>Nachrichten</Typography>
       </Box>
       <List disablePadding sx={{ overflowY: 'auto', flex: 1 }}>
+        {/* Team-Kanal (pinned) */}
+        <ListItem
+          alignItems="flex-start"
+          sx={{
+            cursor: 'pointer',
+            bgcolor: teamKanalActive ? 'action.selected' : 'transparent',
+            '&:hover': { bgcolor: 'action.hover' },
+          }}
+          onClick={() => navigate('/team/nachrichten/team-kanal')}
+        >
+          <ListItemAvatar>
+            <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#E8F5E9', color: '#2E7D32', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <GroupsIcon fontSize="small" />
+            </Box>
+          </ListItemAvatar>
+          <Box sx={{ flex: 1, minWidth: 0, pt: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Team-Kanal</Typography>
+            <Typography variant="caption" color="text.secondary">Gruppen-Chat für alle Fachkräfte</Typography>
+          </Box>
+        </ListItem>
+        <Divider variant="inset" component="li" />
+
         {conversations.length === 0 && (
           <Box sx={{ p: 3, textAlign: 'center', color: 'text.disabled' }}>
             <Typography variant="body2">Noch keine Nachrichten.</Typography>

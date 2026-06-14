@@ -18,6 +18,7 @@ import TeamDienstplan from './pages/team/Dienstplan';
 import TeamProfil from './pages/team/Profil';
 import TeamNachrichten, { EmptyState as TeamNachrichtenEmpty } from './pages/team/Nachrichten';
 import TeamNachrichtenDetail from './pages/team/NachrichtenDetail';
+import TeamKanal from './pages/team/TeamKanal';
 import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
@@ -87,6 +88,7 @@ export const router = createBrowserRouter([
         element: <TeamNachrichten />,
         children: [
           { index: true, element: <TeamNachrichtenEmpty /> },
+          { path: 'team-kanal', element: <TeamKanal /> },
           { path: ':convId', element: <TeamNachrichtenDetail /> },
         ],
       },
