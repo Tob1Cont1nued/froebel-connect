@@ -70,8 +70,10 @@ export default function TraegerDashboard() {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase as any).rpc('get_traeger_stats').then(({ data }: { data: TraegerStats | null }) => {
-      if (data) setStats(data);
+    (supabase as any).rpc('get_traeger_stats').then(({ data, error }: { data: TraegerStats | TraegerStats[] | null; error: unknown }) => {
+      if (error) { console.error('get_traeger_stats:', error); return; }
+      const s = Array.isArray(data) ? data[0] : data;
+      if (s) setStats(s);
     });
   }, []);
 
