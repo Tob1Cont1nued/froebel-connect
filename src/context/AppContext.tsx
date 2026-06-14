@@ -7,6 +7,7 @@ export interface ConvItem {
   from: string;
   fromRole: string;
   avatar: string;
+  avatarUrl: string | null;
   preview: string;
   lastMessage: Date;
   unread: number;
@@ -60,12 +61,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const sb = supabase as any;
     const [{ data: convsRaw }, { data: othersRaw }, { data: msgsRaw }] = await Promise.all([
       sb.from('conversations').select('id, subject, updated_at').in('id', convIds).order('updated_at', { ascending: false }),
-      sb.from('conversation_participants').select('conversation_id, profiles(name, role)').in('conversation_id', convIds).neq('profile_id', userId),
+      sb.from('conversation_participants').select('conversation_id, profiles(name, role, avatar_url)').in('conversation_id', convIds).neq('profile_id', userId),
       sb.from('messages').select('conversation_id, text, created_at').in('conversation_id', convIds).order('created_at', { ascending: false }),
     ]);
 
     const convs = (convsRaw ?? []) as Array<{ id: string; subject: string | null; updated_at: string }>;
-    const others = (othersRaw ?? []) as Array<{ conversation_id: string; profiles: { name: string; role: string } | null }>;
+    const others = (othersRaw ?? []) as Array<{ conversation_id: string; profiles: { name: string; role: string; avatar_url: string | null } | null }>;
     const msgs = (msgsRaw ?? []) as Array<{ conversation_id: string; text: string; created_at: string }>;
 
     const lastMsgMap = new Map<string, { text: string; created_at: string }>();
@@ -85,6 +86,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           from: fromName,
           fromRole: roleLabel[otherProfile?.role ?? ''] ?? 'Kita',
           avatar: initials(fromName),
+          avatarUrl: otherProfile?.avatar_url ?? null,
           preview: lastMsg?.text ?? conv.subject ?? '',
           lastMessage: new Date(lastMsg?.created_at ?? conv.updated_at),
           unread: myPart?.unread_count ?? 0,
@@ -175,6 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       from: recipientName,
       fromRole: roleLabel['fachkraft'],
       avatar: initials(recipientName),
+      avatarUrl: null,
       preview: firstMessage,
       lastMessage: new Date(),
       unread: 0,

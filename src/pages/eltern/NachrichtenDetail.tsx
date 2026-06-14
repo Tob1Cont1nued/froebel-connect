@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
+import ProfileAvatar from '../../components/ProfileAvatar';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
@@ -58,7 +58,7 @@ export default function NachrichtenDetail() {
           <IconButton edge="start" onClick={() => navigate('/eltern/nachrichten')} aria-label="Zurück" sx={{ display: { md: 'none' }, mr: 0 }}>
             <ArrowBackIcon />
           </IconButton>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: '#1A3545', fontSize: 13 }}>{conv.avatar}</Avatar>
+          <ProfileAvatar avatarUrl={conv.avatarUrl} initials={conv.avatar} size={32} alt={conv.from} />
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>{conv.from}</Typography>
             <Typography variant="caption" color="text.secondary">{conv.fromRole}</Typography>

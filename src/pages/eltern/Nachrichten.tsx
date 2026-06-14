@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
+import ProfileAvatar from '../../components/ProfileAvatar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
@@ -56,7 +56,7 @@ export default function Nachrichten() {
             >
               <ListItemAvatar>
                 <Badge badgeContent={conv.unread} color="error" invisible={conv.unread === 0} overlap="circular">
-                  <Avatar sx={{ bgcolor: '#1A3545', fontWeight: 700 }}>{conv.avatar}</Avatar>
+                  <ProfileAvatar avatarUrl={conv.avatarUrl} initials={conv.avatar} size={40} alt={conv.from} />
                 </Badge>
               </ListItemAvatar>
               <Box sx={{ flex: 1, minWidth: 0, pt: 0.5 }}>
