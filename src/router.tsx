@@ -24,6 +24,8 @@ import TraegerDashboard from './pages/traeger/Dashboard';
 import TraegerEinrichtungen from './pages/traeger/Einrichtungen';
 import TraegerEinrichtungDetail from './pages/traeger/EinrichtungDetail';
 import TraegerFachkraefte from './pages/traeger/Fachkraefte';
+import TraegerKinder from './pages/traeger/Kinder';
+import TraegerEltern from './pages/traeger/Eltern';
 import ComingSoon from './pages/ComingSoon';
 import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
@@ -95,6 +97,8 @@ export const router = createBrowserRouter([
       { path: 'einrichtungen', element: <TraegerEinrichtungen /> },
       { path: 'einrichtungen/:id', element: <TraegerEinrichtungDetail /> },
       { path: 'fachkraefte', element: <TraegerFachkraefte /> },
+      { path: 'kinder', element: <TraegerKinder /> },
+      { path: 'eltern', element: <TraegerEltern /> },
       { path: 'rundmails', element: <ComingSoon title="Rundmails" /> },
       { path: 'auswertungen', element: <ComingSoon title="Auswertungen" /> },
     ],
