@@ -28,6 +28,7 @@ import TraegerKinder from './pages/traeger/Kinder';
 import TraegerEltern from './pages/traeger/Eltern';
 import TraegerProfil from './pages/traeger/Profil';
 import TraegerRundmails from './pages/traeger/Rundmails';
+import TraegerAuswertungen from './pages/traeger/Auswertungen';
 import ComingSoon from './pages/ComingSoon';
 import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
@@ -103,7 +104,7 @@ export const router = createBrowserRouter([
       { path: 'eltern', element: <TraegerEltern /> },
       { path: 'profil', element: <TraegerProfil /> },
       { path: 'rundmails', element: <TraegerRundmails /> },
-      { path: 'auswertungen', element: <ComingSoon title="Auswertungen" /> },
+      { path: 'auswertungen', element: <TraegerAuswertungen /> },
     ],
   },
 ]);
