@@ -44,7 +44,7 @@ export default function TraegerProfil() {
       {/* Avatar */}
       <Card sx={{ mb: 2 }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, py: '24px !important' }}>
-          <AvatarPicker initials={avatarInitials} avatarUrl={profile?.avatar_url ?? null} size={80} />
+          <AvatarPicker initials={avatarInitials} size={80} />
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>{profile?.name}</Typography>
             <Chip label="Träger-Admin" size="small" sx={{ mt: 0.5, bgcolor: '#E8EAF6', color: '#1A237E', fontWeight: 600 }} />
