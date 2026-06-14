@@ -13,7 +13,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TodayIcon from '@mui/icons-material/Today';
+import SickIcon from '@mui/icons-material/Sick';
 import { useShifts } from '../../hooks/useShifts';
+import { useKrankmeldungen } from '../../hooks/useKrankmeldungen';
 import { useAuth } from '../../context/AuthContext';
 
 function getMonday(date: Date): Date {
@@ -59,11 +61,12 @@ type DayEntry = {
   isToday: boolean;
 };
 
-function MobileView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: StaffEntry[]; profile: { id: string } | null }) {
+function MobileView({ days, staffMap, profile, krankMap }: { days: DayEntry[]; staffMap: StaffEntry[]; profile: { id: string } | null; krankMap: Map<string, Set<string>> }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
       {days.map((day) => {
         const working = staffMap.filter((s) => s.byDate.has(day.dateStr));
+        const sickStaff = staffMap.filter((s) => !s.byDate.has(day.dateStr) && krankMap.get(s.id)?.has(day.dateStr));
         return (
           <Card key={day.dateStr} sx={{ overflow: 'hidden' }}>
             <Box sx={{
@@ -80,7 +83,7 @@ function MobileView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: S
               )}
             </Box>
 
-            {working.length === 0 ? (
+            {working.length === 0 && sickStaff.length === 0 ? (
               <Box sx={{ px: 2, py: 1.5 }}>
                 <Typography variant="body2" color="text.disabled">Keine Schichten eingetragen</Typography>
               </Box>
@@ -89,21 +92,51 @@ function MobileView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: S
                 {working.map((staff, i) => {
                   const shift = staff.byDate.get(day.dateStr)!;
                   const isMe = staff.id === profile?.id;
+                  const isKrank = krankMap.get(staff.id)?.has(day.dateStr);
                   return (
                     <Box key={staff.id}>
                       {i > 0 && <Divider component="li" />}
-                      <ListItem sx={{ py: 1, bgcolor: isMe ? 'rgba(149,193,31,0.07)' : 'transparent' }}>
+                      <ListItem sx={{ py: 1, bgcolor: isKrank ? 'rgba(194,24,91,0.05)' : isMe ? 'rgba(149,193,31,0.07)' : 'transparent' }}>
                         <Box sx={{ mr: 1.5, flexShrink: 0 }}>
                           <ProfileAvatar avatarUrl={staff.avatarUrl} initials={staff.initials} size={30} alt={staff.name} />
                         </Box>
                         <ListItemText
                           primary={staff.name}
-                          secondary={`${shift.start} – ${shift.end} Uhr`}
-                          slotProps={{ primary: { variant: 'body2', sx: { fontWeight: isMe ? 700 : 500 } } }}
+                          secondary={isKrank ? 'Krank gemeldet' : `${shift.start} – ${shift.end} Uhr`}
+                          slotProps={{
+                            primary: { variant: 'body2', sx: { fontWeight: isMe ? 700 : 500, color: isKrank ? '#C2185B' : 'inherit' } },
+                            secondary: { sx: { color: isKrank ? '#C2185B' : 'inherit' } },
+                          }}
                         />
-                        {isMe && (
+                        {isKrank ? (
+                          <Chip icon={<SickIcon sx={{ fontSize: '13px !important' }} />} label="Krank" size="small"
+                            sx={{ height: 20, fontSize: 10, bgcolor: '#FCE4EC', color: '#C2185B', fontWeight: 700, ml: 1, border: 'none' }} />
+                        ) : isMe && (
                           <Chip label="Ich" size="small" sx={{ height: 20, fontSize: 10, bgcolor: '#95C11F', color: '#1A3545', fontWeight: 700, ml: 1 }} />
                         )}
+                      </ListItem>
+                    </Box>
+                  );
+                })}
+                {sickStaff.map((staff, i) => {
+                  const isMe = staff.id === profile?.id;
+                  return (
+                    <Box key={staff.id}>
+                      {(working.length > 0 || i > 0) && <Divider component="li" />}
+                      <ListItem sx={{ py: 1, bgcolor: 'rgba(194,24,91,0.05)' }}>
+                        <Box sx={{ mr: 1.5, flexShrink: 0 }}>
+                          <ProfileAvatar avatarUrl={staff.avatarUrl} initials={staff.initials} size={30} alt={staff.name} />
+                        </Box>
+                        <ListItemText
+                          primary={staff.name}
+                          secondary="Krank gemeldet"
+                          slotProps={{
+                            primary: { variant: 'body2', sx: { fontWeight: isMe ? 700 : 500, color: '#C2185B' } },
+                            secondary: { sx: { color: '#C2185B' } },
+                          }}
+                        />
+                        <Chip icon={<SickIcon sx={{ fontSize: '13px !important' }} />} label="Krank" size="small"
+                          sx={{ height: 20, fontSize: 10, bgcolor: '#FCE4EC', color: '#C2185B', fontWeight: 700, ml: 1, border: 'none' }} />
                       </ListItem>
                     </Box>
                   );
@@ -117,7 +150,7 @@ function MobileView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: S
   );
 }
 
-function DesktopView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: StaffEntry[]; profile: { id: string } | null; loading: boolean }) {
+function DesktopView({ days, staffMap, profile, krankMap }: { days: DayEntry[]; staffMap: StaffEntry[]; profile: { id: string } | null; loading: boolean; krankMap: Map<string, Set<string>> }) {
   const COL_NAME = 160;
   const COL_DAY = 110;
 
@@ -179,17 +212,23 @@ function DesktopView({ days, staffMap, profile }: { days: DayEntry[]; staffMap: 
               </Box>
               {days.map((day) => {
                 const shift = staff.byDate.get(day.dateStr);
+                const isKrank = krankMap.get(staff.id)?.has(day.dateStr);
                 return (
                   <Box
                     key={day.dateStr}
                     sx={{
                       width: COL_DAY, flexShrink: 0, px: 1, py: 1.5, textAlign: 'center',
                       borderLeft: '1px solid', borderColor: 'divider',
-                      bgcolor: day.isToday ? 'rgba(149,193,31,0.06)' : 'transparent',
+                      bgcolor: isKrank ? 'rgba(194,24,91,0.04)' : day.isToday ? 'rgba(149,193,31,0.06)' : 'transparent',
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     }}
                   >
-                    {shift ? (
+                    {isKrank ? (
+                      <Box sx={{ bgcolor: '#FCE4EC', color: '#C2185B', borderRadius: 1.5, px: 1, py: 0.5, minWidth: 72, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <SickIcon sx={{ fontSize: 14, mb: 0.25 }} />
+                        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: 10, lineHeight: 1 }}>Krank</Typography>
+                      </Box>
+                    ) : shift ? (
                       <Box sx={{
                         bgcolor: isMe ? '#95C11F' : '#1A3545',
                         color: isMe ? '#1A3545' : 'white',
@@ -216,6 +255,7 @@ export default function TeamDienstplan() {
   const { profile } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
   const { shifts, loading } = useShifts(weekStart);
+  const { krankmeldungen } = useKrankmeldungen();
   const isMobile = useMediaQuery('(max-width:700px)');
 
   const todayStr = toDateStr(new Date());
@@ -242,6 +282,20 @@ export default function TeamDienstplan() {
       return a.name.localeCompare(b.name);
     });
   }, [shifts, profile?.id]);
+
+  const krankMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const k of krankmeldungen) {
+      if (!map.has(k.fachkraft_id)) map.set(k.fachkraft_id, new Set());
+      const cur = new Date(k.from_date);
+      const end = new Date(k.to_date);
+      while (cur <= end) {
+        map.get(k.fachkraft_id)!.add(cur.toISOString().split('T')[0]);
+        cur.setDate(cur.getDate() + 1);
+      }
+    }
+    return map;
+  }, [krankmeldungen]);
 
   const friday = addDays(weekStart, 4);
   const kw = formatKW(weekStart);
@@ -288,10 +342,10 @@ export default function TeamDienstplan() {
 
       {/* Responsive views */}
       {!loading && isMobile && (
-        <MobileView days={days} staffMap={staffMap} profile={profile} />
+        <MobileView days={days} staffMap={staffMap} profile={profile} krankMap={krankMap} />
       )}
       {!loading && !isMobile && (
-        <DesktopView days={days} staffMap={staffMap} profile={profile} loading={loading} />
+        <DesktopView days={days} staffMap={staffMap} profile={profile} loading={loading} krankMap={krankMap} />
       )}
 
       {/* Legend */}
@@ -307,6 +361,10 @@ export default function TeamDienstplan() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <Typography variant="caption" color="text.disabled" sx={{ fontSize: 11 }}>—</Typography>
           <Typography variant="caption" color="text.secondary">Frei</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <Box sx={{ width: 12, height: 12, borderRadius: 0.5, bgcolor: '#FCE4EC' }} />
+          <Typography variant="caption" color="text.secondary">Krank</Typography>
         </Box>
       </Box>
     </Box>
