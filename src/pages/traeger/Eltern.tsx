@@ -105,7 +105,7 @@ export default function TraegerEltern() {
               </Avatar>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>{e.name}</Typography>
-                <Typography variant="caption" color="text.secondary" noWrap display="block">{e.email}</Typography>
+                <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{e.email}</Typography>
                 <Typography variant="caption" color="text.secondary">{e.kita_name}</Typography>
               </Box>
               <IconButton
