@@ -13,24 +13,25 @@ function toInitials(name: string) {
 }
 
 export function useKitaFachkraefte() {
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [fachkraefte, setFachkraefte] = useState<FachkraftItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) return;
+    if (!profile?.kita_id) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from('profiles')
       .select('id, name')
       .eq('role', 'fachkraft')
+      .eq('kita_id', profile.kita_id)
       .then(({ data }: { data: any[] | null }) => {
         setFachkraefte(
           (data ?? []).map((p) => ({ id: p.id, name: p.name, initials: toInitials(p.name) }))
         );
         setLoading(false);
       });
-  }, [session?.user.id]);
+  }, [profile?.kita_id]);
 
   return { fachkraefte, loading };
 }
