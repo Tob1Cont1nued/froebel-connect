@@ -22,22 +22,16 @@ export function useKitas() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = supabase as any;
 
-    const [{ data: kitasData }, { data: childData }, { data: staffData }] = await Promise.all([
+    const [{ data: kitasData }, { data: statsData }] = await Promise.all([
       sb.from('kitas').select('id, name, city, address, created_at').order('name'),
-      sb.from('children').select('kita_id'),
-      sb.from('profiles').select('kita_id').eq('role', 'fachkraft'),
+      sb.rpc('get_kita_stats'),
     ]);
 
-    const childMap = new Map<string, number>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (childData ?? []).forEach((c: any) => {
-      if (c.kita_id) childMap.set(c.kita_id, (childMap.get(c.kita_id) ?? 0) + 1);
-    });
-
-    const staffMap = new Map<string, number>();
+    const statsMap = new Map<string, { children: number; staff: number }>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (staffData ?? []).forEach((p: any) => {
-      if (p.kita_id) staffMap.set(p.kita_id, (staffMap.get(p.kita_id) ?? 0) + 1);
+    (statsData ?? []).forEach((s: any) => {
+      statsMap.set(s.kita_id, { children: Number(s.children_count), staff: Number(s.staff_count) });
     });
 
     setKitas(
@@ -48,8 +42,8 @@ export function useKitas() {
         city: k.city ?? null,
         address: k.address ?? null,
         created_at: k.created_at,
-        childrenCount: childMap.get(k.id) ?? 0,
-        staffCount: staffMap.get(k.id) ?? 0,
+        childrenCount: statsMap.get(k.id)?.children ?? 0,
+        staffCount: statsMap.get(k.id)?.staff ?? 0,
       }))
     );
     setLoading(false);
