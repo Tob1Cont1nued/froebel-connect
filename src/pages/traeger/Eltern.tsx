@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { kitaColor } from '../../utils/kitaColors';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -106,7 +107,9 @@ export default function TraegerEltern() {
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>{e.name}</Typography>
                 <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{e.email}</Typography>
-                <Typography variant="caption" color="text.secondary">{e.kita_name}</Typography>
+                {(() => { const c = kitaColor(e.kita_id); return (
+                  <Chip label={e.kita_name} size="small" sx={{ mt: 0.5, height: 18, fontSize: 11, bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                ); })()}
               </Box>
               <IconButton
                 size="small"
@@ -149,7 +152,9 @@ export default function TraegerEltern() {
                   </TableCell>
                   <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>{e.email}</TableCell>
                   <TableCell>
-                    <Chip label={e.kita_name} size="small" variant="outlined" sx={{ fontSize: 12 }} />
+                    {(() => { const c = kitaColor(e.kita_id); return (
+                      <Chip label={e.kita_name} size="small" sx={{ fontSize: 12, bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                    ); })()}
                   </TableCell>
                   <TableCell align="right" onClick={(ev) => ev.stopPropagation()}>
                     <IconButton size="small" component="a" href={`mailto:${e.email}`} aria-label={`E-Mail an ${e.name}`}>

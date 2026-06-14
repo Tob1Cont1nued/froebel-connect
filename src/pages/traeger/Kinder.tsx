@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { kitaColor } from '../../utils/kitaColors';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -104,9 +105,12 @@ export default function TraegerKinder() {
               </Box>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>{k.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {k.age ? `${k.age} Jahre · ` : ''}{k.kita_name}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
+                  {k.age && <Typography variant="caption" color="text.secondary">{k.age} J.</Typography>}
+                  {(() => { const c = kitaColor(k.kita_id); return (
+                    <Chip label={k.kita_name} size="small" sx={{ height: 18, fontSize: 11, bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                  ); })()}
+                </Box>
               </Box>
             </Card>
           ))}
@@ -139,7 +143,9 @@ export default function TraegerKinder() {
                   </TableCell>
                   <TableCell sx={{ color: 'text.secondary' }}>{k.age ? `${k.age} J.` : '–'}</TableCell>
                   <TableCell>
-                    <Chip label={k.kita_name} size="small" variant="outlined" sx={{ fontSize: 12 }} />
+                    {(() => { const c = kitaColor(k.kita_id); return (
+                      <Chip label={k.kita_name} size="small" sx={{ fontSize: 12, bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                    ); })()}
                   </TableCell>
                 </TableRow>
               ))}

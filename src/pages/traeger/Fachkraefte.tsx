@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { kitaColor } from '../../utils/kitaColors';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -289,12 +290,11 @@ export default function TraegerFachkraefte() {
                 <Box sx={{ minWidth: 0 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{f.name}</Typography>
                   <Typography variant="body2" color="text.secondary" noWrap>{f.email}</Typography>
-                  <Chip
-                    label={f.kita_name ?? 'Keine Einrichtung'}
-                    size="small" variant="outlined"
-                    color={f.kita_name ? 'default' : 'warning'}
-                    sx={{ mt: 0.75 }}
-                  />
+                  {f.kita_id && f.kita_name ? (() => { const c = kitaColor(f.kita_id); return (
+                    <Chip label={f.kita_name} size="small" sx={{ mt: 0.75, bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                  ); })() : (
+                    <Chip label="Keine Einrichtung" size="small" color="warning" variant="outlined" sx={{ mt: 0.75 }} />
+                  )}
                 </Box>
                 <Box sx={{ display: 'flex', flexShrink: 0 }}>
                   <IconButton size="small" onClick={() => setEditTarget(f)} aria-label="Bearbeiten"><EditOutlinedIcon fontSize="small" /></IconButton>
@@ -322,9 +322,11 @@ export default function TraegerFachkraefte() {
                   <TableCell sx={{ fontWeight: 600 }}>{f.name}</TableCell>
                   <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>{f.email}</TableCell>
                   <TableCell>
-                    {f.kita_name
-                      ? <Chip label={f.kita_name} size="small" variant="outlined" />
-                      : <Chip label="Keine Zuordnung" size="small" variant="outlined" color="warning" />}
+                    {f.kita_id && f.kita_name ? (() => { const c = kitaColor(f.kita_id); return (
+                      <Chip label={f.kita_name} size="small" sx={{ bgcolor: c.bg, color: c.color, fontWeight: 600, border: 'none' }} />
+                    ); })() : (
+                      <Chip label="Keine Zuordnung" size="small" color="warning" variant="outlined" />
+                    )}
                   </TableCell>
                   <TableCell sx={{ color: 'text.secondary', fontSize: 12 }}>
                     {new Date(f.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}
