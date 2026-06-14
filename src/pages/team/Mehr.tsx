@@ -16,6 +16,7 @@ import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 
 export default function TeamMehr() {
   const navigate = useNavigate();
@@ -24,6 +25,12 @@ export default function TeamMehr() {
   const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
   const items = [
+    ...(profile?.is_leitung ? [{
+      icon: <AdminPanelSettingsOutlinedIcon sx={{ color: '#95C11F' }} />,
+      label: 'Leitung-Verwaltung',
+      desc: 'Zur Kita-Administration wechseln',
+      action: () => navigate('/leitung/dashboard'),
+    }] : []),
     { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: profile?.email ?? '', action: () => navigate('/team/profil') },
     { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => navigate('/team/barrierefreiheit') },
     { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => navigate('/team/sicherheit') },
