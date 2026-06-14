@@ -46,20 +46,22 @@ function StatCard({ label, value, icon, color, bg, onClick }: StatCardProps) {
       onClick={onClick}
       sx={{
         flex: 1,
-        minWidth: 120,
+        minWidth: 140,
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'box-shadow 0.15s',
-        '&:hover': onClick ? { boxShadow: 4 } : {},
+        transition: 'box-shadow 0.15s, transform 0.15s',
+        '&:hover': onClick ? { boxShadow: 4, transform: 'translateY(-2px)' } : {},
       }}
     >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ p: 1, borderRadius: 2, bgcolor: bg, color, display: 'flex' }}>{icon}</Box>
+      <CardContent sx={{ p: { xs: 2, md: 3 }, '&:last-child': { pb: { xs: 2, md: 3 } } }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1.5 }}>
+          <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: bg, color, display: 'flex' }}>
+            {icon}
+          </Box>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: '#1A3545', lineHeight: 1.1 }}>
-              {value ?? <Skeleton width={32} />}
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1A3545', lineHeight: 1 }}>
+              {value ?? <Skeleton width={40} />}
             </Typography>
-            <Typography variant="caption" color="text.secondary">{label}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{label}</Typography>
           </Box>
         </Box>
       </CardContent>
@@ -96,7 +98,7 @@ export default function LeitungDashboard() {
   const greeting = hour < 12 ? 'Guten Morgen' : hour < 18 ? 'Guten Tag' : 'Guten Abend';
 
   return (
-    <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ p: 3, maxWidth: 1100, mx: 'auto' }}>
       {/* Greeting */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 700 }}>
@@ -116,28 +118,28 @@ export default function LeitungDashboard() {
         <StatCard
           label="Kinder"
           value={stats?.kinder}
-          icon={<ChildCareIcon fontSize="small" />}
+          icon={<ChildCareIcon />}
           color="#2E7D32" bg="#E8F5E9"
           onClick={() => navigate('/leitung/kinder')}
         />
         <StatCard
           label="Fachkräfte"
           value={stats?.fachkraefte}
-          icon={<PeopleOutlinedIcon fontSize="small" />}
+          icon={<PeopleOutlinedIcon />}
           color="#1565C0" bg="#E3F2FD"
           onClick={() => navigate('/leitung/fachkraefte')}
         />
         <StatCard
           label="Eltern-Accounts"
           value={stats?.eltern}
-          icon={<FamilyRestroomIcon fontSize="small" />}
+          icon={<FamilyRestroomIcon />}
           color="#7B1FA2" bg="#F3E5F5"
           onClick={() => navigate('/leitung/eltern')}
         />
         <StatCard
           label="Nächste Termine"
           value={stats?.termine}
-          icon={<CalendarTodayOutlinedIcon fontSize="small" />}
+          icon={<CalendarTodayOutlinedIcon />}
           color="#E65100" bg="#FFF3E0"
           onClick={() => navigate('/leitung/termine')}
         />
