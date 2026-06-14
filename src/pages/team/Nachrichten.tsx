@@ -5,10 +5,13 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
 import Badge from '@mui/material/Badge';
 import ProfileAvatar from '../../components/ProfileAvatar';
+import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,15 +20,38 @@ import Button from '@mui/material/Button';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import GroupsIcon from '@mui/icons-material/Groups';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useApp } from '../../context/AppContext';
+import { useKitaFachkraefte } from '../../hooks/useKitaFachkraefte';
+import { useAuth } from '../../context/AuthContext';
 
 function NachrichtenListe() {
   const navigate = useNavigate();
-  const { conversations, deleteConversation } = useApp();
+  const { profile } = useAuth();
+  const { conversations, deleteConversation, createConversation } = useApp();
+  const { fachkraefte } = useKitaFachkraefte();
   const matchDetail = useMatch('/team/nachrichten/:convId');
   const activeId = matchDetail?.params.convId;
   const teamKanalActive = activeId === 'team-kanal';
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [firstMsg, setFirstMsg] = useState('');
+  const [composing, setComposing] = useState(false);
+
+  const colleagues = fachkraefte.filter((f) => f.id !== profile?.id);
+
+  const handleCompose = async () => {
+    if (!selectedId || !firstMsg.trim()) return;
+    setComposing(true);
+    const recipient = colleagues.find((f) => f.id === selectedId);
+    const convId = await createConversation(selectedId, recipient?.name ?? 'Kolleg:in', null, firstMsg.trim());
+    setComposing(false);
+    setComposeOpen(false);
+    setSelectedId(null);
+    setFirstMsg('');
+    if (convId) navigate(`/team/nachrichten/${convId}`);
+  };
 
   const handleDelete = async () => {
     if (!confirmId) return;
@@ -36,8 +62,11 @@ function NachrichtenListe() {
 
   return (
     <>
-      <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>Nachrichten</Typography>
+      <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, flex: 1 }}>Nachrichten</Typography>
+        <IconButton size="small" onClick={() => setComposeOpen(true)} title="Neue Nachricht">
+          <EditOutlinedIcon fontSize="small" />
+        </IconButton>
       </Box>
       <List disablePadding sx={{ overflowY: 'auto', flex: 1 }}>
         {/* Team-Kanal (pinned) */}
@@ -121,6 +150,55 @@ function NachrichtenListe() {
         ))}
       </List>
 
+      {/* Neue Nachricht Dialog */}
+      <Dialog open={composeOpen} onClose={() => { setComposeOpen(false); setSelectedId(null); setFirstMsg(''); }} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700 }}>Neue Nachricht</DialogTitle>
+        <DialogContent sx={{ p: 0 }}>
+          <List disablePadding>
+            {colleagues.map((f, i) => (
+              <Box key={f.id}>
+                {i > 0 && <Divider />}
+                <ListItemButton
+                  selected={selectedId === f.id}
+                  onClick={() => setSelectedId(f.id)}
+                  sx={{ px: 2, py: 1.25, '&.Mui-selected': { bgcolor: '#F1F8E9' } }}
+                >
+                  <ListItemAvatar sx={{ minWidth: 44 }}>
+                    <Avatar sx={{ width: 34, height: 34, bgcolor: '#E3F2FD', color: '#1565C0', fontWeight: 700, fontSize: 13 }}>
+                      {f.initials}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <Typography variant="body2" sx={{ fontWeight: selectedId === f.id ? 700 : 400 }}>{f.name}</Typography>
+                </ListItemButton>
+              </Box>
+            ))}
+          </List>
+          {selectedId && (
+            <Box sx={{ px: 2, pt: 1.5, pb: 1 }}>
+              <TextField
+                fullWidth multiline minRows={2} size="small"
+                placeholder="Erste Nachricht …"
+                value={firstMsg}
+                onChange={(e) => setFirstMsg(e.target.value)}
+                autoFocus
+                sx={{ mt: 0.5 }}
+              />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 2, pb: 2 }}>
+          <Button onClick={() => { setComposeOpen(false); setSelectedId(null); setFirstMsg(''); }}>Abbrechen</Button>
+          <Button
+            variant="contained" disabled={!selectedId || !firstMsg.trim() || composing}
+            onClick={handleCompose}
+            sx={{ bgcolor: '#95C11F', '&:hover': { bgcolor: '#7EA819' } }}
+          >
+            Senden
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Konversation löschen Dialog */}
       <Dialog open={!!confirmId} onClose={() => setConfirmId(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Konversation löschen?</DialogTitle>
         <DialogContent>
