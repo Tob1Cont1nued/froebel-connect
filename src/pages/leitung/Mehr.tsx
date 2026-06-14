@@ -23,7 +23,7 @@ const items = [
 export default function LeitungMehr() {
   const navigate = useNavigate();
   return (
-    <Box sx={{ p: 3, maxWidth: 500, mx: 'auto' }}>
+    <Box sx={{ p: 2, maxWidth: 600, mx: 'auto', width: '100%' }}>
       <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>Mehr</Typography>
       <Card>
         <List disablePadding>
