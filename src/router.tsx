@@ -22,6 +22,7 @@ import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
 import TraegerEinrichtungen from './pages/traeger/Einrichtungen';
+import TraegerEinrichtungDetail from './pages/traeger/EinrichtungDetail';
 import TraegerFachkraefte from './pages/traeger/Fachkraefte';
 import ComingSoon from './pages/ComingSoon';
 import ErrorPage from './pages/ErrorPage';
@@ -92,6 +93,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <TraegerDashboard /> },
       { path: 'einrichtungen', element: <TraegerEinrichtungen /> },
+      { path: 'einrichtungen/:id', element: <TraegerEinrichtungDetail /> },
       { path: 'fachkraefte', element: <TraegerFachkraefte /> },
       { path: 'rundmails', element: <ComingSoon title="Rundmails" /> },
       { path: 'auswertungen', element: <ComingSoon title="Auswertungen" /> },

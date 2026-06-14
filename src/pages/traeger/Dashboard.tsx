@@ -144,7 +144,7 @@ export default function TraegerDashboard() {
                   key={k.id}
                   hover
                   sx={{ cursor: 'pointer' }}
-                  onClick={() => navigate('/traeger/einrichtungen')}
+                  onClick={() => navigate(`/traeger/einrichtungen/${k.id}`)}
                 >
                   <TableCell sx={{ fontWeight: 600, fontSize: 14 }}>{k.name}</TableCell>
                   <TableCell>{k.city ?? '–'}</TableCell>

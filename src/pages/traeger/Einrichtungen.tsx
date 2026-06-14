@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -149,6 +150,7 @@ function DeleteDialog({
 }
 
 export default function TraegerEinrichtungen() {
+  const navigate = useNavigate();
   const { kitas, loading, createKita, updateKita, deleteKita } = useKitas();
   const [search, setSearch] = useState('');
   const [editKita, setEditKita] = useState<KitaItem | null>(null);
@@ -233,7 +235,8 @@ export default function TraegerEinrichtungen() {
         /* Mobile card view */
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {filtered.map((k) => (
-            <Card key={k.id} sx={{ p: 2 }}>
+            <Card key={k.id} sx={{ p: 2, cursor: 'pointer', '&:hover': { boxShadow: 3 } }}
+              onClick={() => navigate(`/traeger/einrichtungen/${k.id}`)}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
                 <Box sx={{ minWidth: 0 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{k.name}</Typography>
@@ -248,10 +251,10 @@ export default function TraegerEinrichtungen() {
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', flexShrink: 0 }}>
-                  <IconButton size="small" onClick={() => openEdit(k)} aria-label="Bearbeiten">
+                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); openEdit(k); }} aria-label="Bearbeiten">
                     <EditOutlinedIcon fontSize="small" />
                   </IconButton>
-                  <IconButton size="small" onClick={() => setDeleteTarget(k)} aria-label="Löschen" sx={{ color: 'error.main' }}>
+                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); setDeleteTarget(k); }} aria-label="Löschen" sx={{ color: 'error.main' }}>
                     <DeleteOutlinedIcon fontSize="small" />
                   </IconButton>
                 </Box>
@@ -275,7 +278,8 @@ export default function TraegerEinrichtungen() {
             </TableHead>
             <TableBody>
               {filtered.map((k) => (
-                <TableRow key={k.id} hover>
+                <TableRow key={k.id} hover sx={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/traeger/einrichtungen/${k.id}`)}>
                   <TableCell sx={{ fontWeight: 600 }}>{k.name}</TableCell>
                   <TableCell>{k.city ?? '–'}</TableCell>
                   <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>{k.address ?? '–'}</TableCell>
@@ -285,7 +289,7 @@ export default function TraegerEinrichtungen() {
                   <TableCell align="center">
                     <Chip label={k.staffCount} size="small" sx={{ minWidth: 36 }} />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                     <IconButton size="small" onClick={() => openEdit(k)} aria-label={`${k.name} bearbeiten`}>
                       <EditOutlinedIcon fontSize="small" />
                     </IconButton>
