@@ -45,6 +45,12 @@ interface KindDetail {
   photo_url: string | null;
 }
 
+interface ElternDetail {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AppointmentDetail {
   id: string;
   title: string;
@@ -130,6 +136,7 @@ export default function EinrichtungDetail() {
 
   const [tab, setTab] = useState(0);
   const [kinder, setKinder] = useState<KindDetail[]>([]);
+  const [eltern, setEltern] = useState<ElternDetail[]>([]);
   const [appointments, setAppointments] = useState<AppointmentDetail[]>([]);
   const [detailLoading, setDetailLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
@@ -142,11 +149,13 @@ export default function EinrichtungDetail() {
     setDetailLoading(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = supabase as any;
-    const [{ data: kinderData }, { data: appoData }] = await Promise.all([
+    const [{ data: kinderData }, { data: elternData }, { data: appoData }] = await Promise.all([
       sb.rpc('get_kita_children_list', { p_kita_id: id }),
+      sb.rpc('get_kita_eltern', { p_kita_id: id }),
       sb.rpc('get_kita_upcoming_appointments', { p_kita_id: id }),
     ]);
     setKinder(kinderData ?? []);
+    setEltern(elternData ?? []);
     setAppointments(appoData ?? []);
     setDetailLoading(false);
   }, [id]);
@@ -227,6 +236,7 @@ export default function EinrichtungDetail() {
         sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 } }}
       >
         <Tab label={`Fachkräfte (${kitaFachkraefte.length})`} />
+        <Tab label={`Eltern (${eltern.length})`} />
         <Tab label={`Kinder (${kinder.length || kita?.childrenCount || 0})`} />
         <Tab label={`Nächste Termine (${appointments.length})`} />
       </Tabs>
@@ -267,8 +277,55 @@ export default function EinrichtungDetail() {
         </Card>
       )}
 
-      {/* Tab: Kinder */}
+      {/* Tab: Eltern */}
       {tab === 1 && (
+        detailLoading ? (
+          <Card>
+            {[...Array(4)].map((_, i) => (
+              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, borderBottom: i < 3 ? '1px solid' : 'none', borderColor: 'divider' }}>
+                <Skeleton variant="circular" width={40} height={40} />
+                <Box sx={{ flex: 1 }}><Skeleton width={160} /><Skeleton width={200} /></Box>
+              </Box>
+            ))}
+          </Card>
+        ) : eltern.length === 0 ? (
+          <Card>
+            <Box sx={{ p: 4, textAlign: 'center', color: 'text.disabled' }}>
+              <GroupsIcon sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body2">Noch keine Eltern-Accounts in dieser Einrichtung.</Typography>
+            </Box>
+          </Card>
+        ) : (
+          <Card>
+            <List disablePadding>
+              {eltern.map((e, i) => (
+                <ListItem
+                  key={e.id}
+                  divider={i < eltern.length - 1}
+                  secondaryAction={
+                    <IconButton size="small" component="a" href={`mailto:${e.email}`} aria-label={`E-Mail an ${e.name}`}>
+                      <EmailOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  }
+                >
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: '#E3F2FD', color: '#0B5394', fontWeight: 700, fontSize: 14 }}>
+                      {initials(e.name)}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={<Typography variant="body2" sx={{ fontWeight: 600 }}>{e.name}</Typography>}
+                    secondary={e.email}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Card>
+        )
+      )}
+
+      {/* Tab: Kinder */}
+      {tab === 2 && (
         detailLoading ? (
           <Grid container spacing={1.5}>
             {[...Array(8)].map((_, i) => (
@@ -310,7 +367,7 @@ export default function EinrichtungDetail() {
       )}
 
       {/* Tab: Termine */}
-      {tab === 2 && (
+      {tab === 3 && (
         detailLoading ? (
           <Card>
             {[...Array(3)].map((_, i) => (
