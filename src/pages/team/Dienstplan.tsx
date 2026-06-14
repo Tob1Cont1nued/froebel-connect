@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -15,8 +15,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TodayIcon from '@mui/icons-material/Today';
 import SickIcon from '@mui/icons-material/Sick';
 import { useShifts } from '../../hooks/useShifts';
-import { useKrankmeldungen } from '../../hooks/useKrankmeldungen';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 function getMonday(date: Date): Date {
   const d = new Date(date);
@@ -255,8 +255,37 @@ export default function TeamDienstplan() {
   const { profile } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
   const { shifts, loading } = useShifts(weekStart);
-  const { krankmeldungen } = useKrankmeldungen();
   const isMobile = useMediaQuery('(max-width:700px)');
+
+  // Load sick leaves that overlap with the viewed week (not just >= today)
+  const [krankmeldungen, setKrankmeldungen] = useState<Array<{
+    id: string; fachkraft_id: string; fachkraft_name: string; from_date: string; to_date: string;
+  }>>([]);
+
+  const weekStartStr = useMemo(() => toDateStr(weekStart), [weekStart]);
+  const weekEndStr = useMemo(() => toDateStr(addDays(weekStart, 4)), [weekStart]);
+
+  const loadWeekKrankmeldungen = useCallback(async () => {
+    if (!profile?.kita_id) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any)
+      .from('krankmeldungen')
+      .select('*, profiles(name)')
+      .eq('kita_id', profile.kita_id)
+      .lte('from_date', weekEndStr)
+      .gte('to_date', weekStartStr)
+      .order('from_date', { ascending: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setKrankmeldungen((data ?? []).map((r: any) => ({
+      id: r.id,
+      fachkraft_id: r.fachkraft_id,
+      fachkraft_name: r.profiles?.name ?? 'Unbekannt',
+      from_date: r.from_date,
+      to_date: r.to_date,
+    })));
+  }, [profile?.kita_id, weekStartStr, weekEndStr]);
+
+  useEffect(() => { loadWeekKrankmeldungen(); }, [loadWeekKrankmeldungen]);
 
   const todayStr = toDateStr(new Date());
 
@@ -287,10 +316,14 @@ export default function TeamDienstplan() {
     const map = new Map<string, Set<string>>();
     for (const k of krankmeldungen) {
       if (!map.has(k.fachkraft_id)) map.set(k.fachkraft_id, new Set());
-      const cur = new Date(k.from_date);
-      const end = new Date(k.to_date);
+      // Parse as local noon to avoid UTC-midnight timezone shifts
+      const cur = new Date(k.from_date + 'T12:00:00');
+      const end = new Date(k.to_date + 'T12:00:00');
       while (cur <= end) {
-        map.get(k.fachkraft_id)!.add(cur.toISOString().split('T')[0]);
+        const y = cur.getFullYear();
+        const m = String(cur.getMonth() + 1).padStart(2, '0');
+        const d = String(cur.getDate()).padStart(2, '0');
+        map.get(k.fachkraft_id)!.add(`${y}-${m}-${d}`);
         cur.setDate(cur.getDate() + 1);
       }
     }
