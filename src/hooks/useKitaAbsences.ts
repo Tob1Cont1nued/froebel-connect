@@ -16,16 +16,17 @@ export interface KitaAbsenceItem {
 }
 
 export function useKitaAbsences() {
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [absences, setAbsences] = useState<KitaAbsenceItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    if (!session) return;
+    if (!profile?.kita_id) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (supabase as any)
       .from('absences')
-      .select('id, child_id, from_date, to_date, reason, note, status, children(name, emoji), profiles(name)')
+      .select('id, child_id, from_date, to_date, reason, note, status, children!inner(name, emoji, kita_id), profiles(name)')
+      .eq('children.kita_id', profile.kita_id)
       .order('created_at', { ascending: false });
 
     setAbsences(
@@ -52,7 +53,7 @@ export function useKitaAbsences() {
     setAbsences((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'confirmed' } : a)));
   };
 
-  useEffect(() => { load(); }, [session?.user.id]);
+  useEffect(() => { load(); }, [profile?.kita_id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { absences, loading, confirmAbsence };
 }
