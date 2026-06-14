@@ -17,7 +17,7 @@ export function useTeamMessages() {
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const load = useCallback(async () => {
-    if (!profile?.kita_id) return;
+    if (!profile?.kita_id) { setLoading(false); return; }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (supabase as any)
       .from('team_messages')
@@ -31,9 +31,9 @@ export function useTeamMessages() {
 
   useEffect(() => {
     load();
-
     if (!profile?.kita_id) return;
 
+    // Realtime subscription (best-effort — requires table in realtime publication)
     const channel = supabase
       .channel(`team_messages:${profile.kita_id}`)
       .on(
@@ -41,33 +41,29 @@ export function useTeamMessages() {
         { event: 'INSERT', schema: 'public', table: 'team_messages', filter: `kita_id=eq.${profile.kita_id}` },
         (payload) => {
           const incoming = payload.new as TeamMessage;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === incoming.id)) return prev;
-            // replace any matching optimistic message (same sender + message + within 10s)
-            const optimisticIdx = prev.findIndex(
-              (m) => m.id.startsWith('optimistic-') &&
-                m.sender_id === incoming.sender_id &&
-                m.message === incoming.message
-            );
-            if (optimisticIdx !== -1) {
-              const next = [...prev];
-              next[optimisticIdx] = incoming;
-              return next;
-            }
-            return [...prev, incoming];
-          });
+          setMessages((prev) =>
+            prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]
+          );
         }
       )
       .subscribe();
 
     channelRef.current = channel;
-    return () => { channel.unsubscribe(); };
+
+    // Polling fallback every 8s in case realtime is not configured on this table
+    const poll = setInterval(load, 8000);
+
+    return () => {
+      channel.unsubscribe();
+      clearInterval(poll);
+    };
   }, [load, profile?.kita_id]);
 
   const send = async (message: string) => {
     if (!profile?.kita_id || !message.trim()) return;
+    // Optimistic insert
     const optimistic: TeamMessage = {
-      id: `optimistic-${Date.now()}`,
+      id: `opt-${Date.now()}`,
       sender_id: profile.id,
       sender_name: profile.name ?? '',
       message: message.trim(),
@@ -75,19 +71,14 @@ export function useTeamMessages() {
     };
     setMessages((prev) => [...prev, optimistic]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (supabase as any)
-      .from('team_messages')
-      .insert({
-        kita_id: profile.kita_id,
-        sender_id: profile.id,
-        sender_name: profile.name,
-        message: message.trim(),
-      })
-      .select()
-      .single();
-    if (data) {
-      setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? data : m)));
-    }
+    await (supabase as any).from('team_messages').insert({
+      kita_id: profile.kita_id,
+      sender_id: profile.id,
+      sender_name: profile.name,
+      message: message.trim(),
+    });
+    // Reload to replace optimistic entry with real DB row
+    await load();
   };
 
   return { messages, loading, send };
