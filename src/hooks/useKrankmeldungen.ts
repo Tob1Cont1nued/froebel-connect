@@ -69,10 +69,12 @@ export function useKrankmeldungen() {
   };
 
   const today = new Date().toISOString().split('T')[0];
+  // aktuellKrank = heute tatsächlich krank (für Anzeige bei Kollegen)
   const aktuellKrank = krankmeldungen.filter(
     (k) => k.from_date <= today && k.to_date >= today
   );
-  const eigeneMeldung = aktuellKrank.find((k) => k.fachkraft_id === profile?.id) ?? null;
+  // eigeneMeldung = jede nicht abgelaufene eigene Meldung (auch Zukunft)
+  const eigeneMeldung = krankmeldungen.find((k) => k.fachkraft_id === profile?.id) ?? null;
 
   return { krankmeldungen, aktuellKrank, eigeneMeldung, loading, melden, zurueckziehen };
 }

@@ -94,7 +94,10 @@ export default function TeamDashboard() {
                 onClick={() => zurueckziehen(eigeneMeldung.id)}
                 sx={{ bgcolor: 'rgba(194,24,91,0.25)', color: '#FCE4EC', fontWeight: 600, borderRadius: 2, py: 1, '&:hover': { bgcolor: 'rgba(194,24,91,0.4)' } }}
               >
-                Krank gemeldet · Zurückziehen
+                {eigeneMeldung.from_date === eigeneMeldung.to_date
+                  ? `Krank ${new Date(eigeneMeldung.from_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })} · Zurückziehen`
+                  : `Krank ${new Date(eigeneMeldung.from_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}–${new Date(eigeneMeldung.to_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })} · Zurückziehen`
+                }
               </Button>
             ) : (
               <Button
