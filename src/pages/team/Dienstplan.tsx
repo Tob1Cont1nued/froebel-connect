@@ -297,6 +297,27 @@ export default function TeamDienstplan() {
     return map;
   }, [krankmeldungen]);
 
+  // Extend staffMap with sick Fachkräfte who have no shifts this week
+  const extendedStaffMap = useMemo(() => {
+    const staffIds = new Set(staffMap.map((s) => s.id));
+    const weekDates = days.map((d) => d.dateStr);
+    const sickOnly: StaffEntry[] = [];
+    for (const [fachkraftId, sickDates] of krankMap.entries()) {
+      if (staffIds.has(fachkraftId)) continue;
+      if (!weekDates.some((d) => sickDates.has(d))) continue;
+      const k = krankmeldungen.find((km) => km.fachkraft_id === fachkraftId);
+      if (!k) continue;
+      sickOnly.push({
+        id: fachkraftId,
+        name: k.fachkraft_name,
+        initials: k.fachkraft_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase(),
+        avatarUrl: null,
+        byDate: new Map(),
+      });
+    }
+    return [...staffMap, ...sickOnly.sort((a, b) => a.name.localeCompare(b.name))];
+  }, [staffMap, krankMap, krankmeldungen, days]);
+
   const friday = addDays(weekStart, 4);
   const kw = formatKW(weekStart);
 
@@ -342,10 +363,10 @@ export default function TeamDienstplan() {
 
       {/* Responsive views */}
       {!loading && isMobile && (
-        <MobileView days={days} staffMap={staffMap} profile={profile} krankMap={krankMap} />
+        <MobileView days={days} staffMap={extendedStaffMap} profile={profile} krankMap={krankMap} />
       )}
       {!loading && !isMobile && (
-        <DesktopView days={days} staffMap={staffMap} profile={profile} loading={loading} krankMap={krankMap} />
+        <DesktopView days={days} staffMap={extendedStaffMap} profile={profile} loading={loading} krankMap={krankMap} />
       )}
 
       {/* Legend */}
