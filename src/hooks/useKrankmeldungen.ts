@@ -63,9 +63,13 @@ export function useKrankmeldungen() {
   };
 
   const zurueckziehen = async (id: string) => {
+    setKrankmeldungen((prev) => prev.filter((k) => k.id !== id)); // optimistic
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from('krankmeldungen').delete().eq('id', id);
-    if (!error) setKrankmeldungen((prev) => prev.filter((k) => k.id !== id));
+    if (error) {
+      console.error('krankmeldungen delete error:', error);
+      await load(); // revert if DB delete failed
+    }
   };
 
   const today = new Date().toISOString().split('T')[0];
