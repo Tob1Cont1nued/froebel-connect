@@ -9,6 +9,7 @@ import Abwesenheit from './pages/eltern/Abwesenheit';
 import Termine from './pages/eltern/Termine';
 import Portfolio from './pages/eltern/Portfolio';
 import Mehr from './pages/eltern/Mehr';
+import ElternEssenplan from './pages/eltern/Essenplan';
 import ElternProfil from './pages/eltern/Profil';
 import Dokumente from './pages/eltern/Dokumente';
 import TeamLayout from './components/TeamLayout';
@@ -20,6 +21,7 @@ import TeamNachrichten, { EmptyState as TeamNachrichtenEmpty } from './pages/tea
 import TeamNachrichtenDetail from './pages/team/NachrichtenDetail';
 import TeamKanal from './pages/team/TeamKanal';
 import TeamTodos from './pages/team/Todos';
+import TeamEssenplan from './pages/team/Essenplan';
 import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
@@ -69,6 +71,7 @@ export const router = createBrowserRouter([
       { path: 'termine', element: <Termine /> },
       { path: 'portfolio', element: <Portfolio /> },
       { path: 'dokumente', element: <Dokumente /> },
+      { path: 'essenplan', element: <ElternEssenplan /> },
       { path: 'mehr', element: <Mehr /> },
       { path: 'profil', element: <ElternProfil /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/eltern/mehr" /> },
@@ -96,6 +99,7 @@ export const router = createBrowserRouter([
       { path: 'kinder', element: <TeamKinder /> },
       { path: 'dienstplan', element: <TeamDienstplan /> },
       { path: 'todos', element: <TeamTodos /> },
+      { path: 'essenplan', element: <TeamEssenplan /> },
       { path: 'mehr', element: <TeamMehr /> },
       { path: 'profil', element: <TeamProfil /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/team/mehr" /> },

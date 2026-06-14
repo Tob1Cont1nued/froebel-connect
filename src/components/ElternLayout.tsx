@@ -24,6 +24,7 @@ import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import RestaurantMenuOutlinedIcon from '@mui/icons-material/RestaurantMenuOutlined';
 import { useApp } from '../context/AppContext';
 import ProfileAvatar from './ProfileAvatar';
 
@@ -35,6 +36,7 @@ const navItems = [
   { label: 'Nachrichten', icon: <ChatBubbleOutlinedIcon />, path: '/eltern/nachrichten' },
   { label: 'Termine', icon: <CalendarTodayOutlinedIcon />, path: '/eltern/termine' },
   { label: 'Portfolio', icon: <PhotoLibraryOutlinedIcon />, path: '/eltern/portfolio' },
+  { label: 'Essenplan', icon: <RestaurantMenuOutlinedIcon />, path: '/eltern/essenplan' },
   { label: 'Mehr', icon: <GridViewOutlinedIcon />, path: '/eltern/mehr' },
 ];
 

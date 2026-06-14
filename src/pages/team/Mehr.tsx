@@ -18,6 +18,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import ChecklistIcon from '@mui/icons-material/Checklist';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 export default function TeamMehr() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function TeamMehr() {
       action: () => navigate('/leitung/dashboard'),
     }] : []),
     { icon: <ChecklistIcon sx={{ color: '#1A3545' }} />, label: 'Aufgaben', desc: 'Meine ToDo-Liste', action: () => navigate('/team/todos') },
+    { icon: <RestaurantMenuIcon sx={{ color: '#E65100' }} />, label: 'Speiseplan', desc: 'Mittagessen & Vesper eintragen', action: () => navigate('/team/essenplan') },
     { icon: <PersonOutlinedIcon />, label: 'Mein Profil', desc: profile?.email ?? '', action: () => navigate('/team/profil') },
     { icon: <AccessibilityNewIcon />, label: 'Barrierefreiheit', desc: 'Schriftgröße, Kontrast, Vorlesefunktion', action: () => navigate('/team/barrierefreiheit') },
     { icon: <LockOutlinedIcon />, label: 'Datenschutz & Sicherheit', desc: 'DSGVO-konform', action: () => navigate('/team/sicherheit') },
