@@ -39,11 +39,15 @@ interface StatCardProps {
   label: string;
   color: string;
   bg: string;
+  onClick?: () => void;
 }
 
-function StatCard({ icon, value, label, color, bg }: StatCardProps) {
+function StatCard({ icon, value, label, color, bg, onClick }: StatCardProps) {
   return (
-    <Card>
+    <Card
+      onClick={onClick}
+      sx={onClick ? { cursor: 'pointer', transition: 'box-shadow .15s', '&:hover': { boxShadow: 4 } } : undefined}
+    >
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '16px !important' }}>
         <Box sx={{ width: 48, height: 48, borderRadius: 2, bgcolor: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
           {icon}
@@ -87,16 +91,16 @@ export default function TraegerDashboard() {
       </Typography>
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard icon={<BusinessIcon />} value={stats?.einrichtungen ?? null} label="Einrichtungen" color="#1A237E" bg="#E8EAF6" />
+          <StatCard icon={<BusinessIcon />} value={stats?.einrichtungen ?? null} label="Einrichtungen" color="#1A237E" bg="#E8EAF6" onClick={() => navigate('/traeger/einrichtungen')} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard icon={<ChildCareIcon />} value={stats?.kinder ?? null} label="Betreute Kinder" color="#2E7D32" bg="#E8F5E9" />
+          <StatCard icon={<ChildCareIcon />} value={stats?.kinder ?? null} label="Betreute Kinder" color="#2E7D32" bg="#E8F5E9" onClick={() => navigate('/traeger/einrichtungen')} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard icon={<PeopleIcon />} value={stats?.fachkraefte ?? null} label="Fachkräfte" color="#0B5394" bg="#E3F2FD" />
+          <StatCard icon={<PeopleIcon />} value={stats?.fachkraefte ?? null} label="Fachkräfte" color="#0B5394" bg="#E3F2FD" onClick={() => navigate('/traeger/fachkraefte')} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard icon={<GroupsIcon />} value={stats?.eltern_aktiv ?? null} label="Aktive Eltern-Accounts" color="#E65100" bg="#FFF3E0" />
+          <StatCard icon={<GroupsIcon />} value={stats?.eltern_aktiv ?? null} label="Aktive Eltern-Accounts" color="#E65100" bg="#FFF3E0" onClick={() => navigate('/traeger/fachkraefte')} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard icon={<ChatIcon />} value={stats?.nachrichten_heute ?? null} label="Nachrichten heute" color="#6A1B9A" bg="#F3E5F5" />
