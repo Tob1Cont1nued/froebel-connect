@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Drawer from '@mui/material/Drawer';
@@ -22,6 +21,7 @@ import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ProfileAvatar from './ProfileAvatar';
 
 const DRAWER_WIDTH = 240;
 
@@ -79,19 +79,6 @@ export default function TraegerLayout() {
       </List>
       <Box sx={{ mt: 'auto', p: 2 }}>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: '#95C11F', color: '#1A3545', fontSize: 13, fontWeight: 700 }}>
-            {avatarInitials}
-          </Avatar>
-          <Box>
-            <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', color: 'white' }}>
-              {profile?.name ?? ''}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
-              Träger-Admin
-            </Typography>
-          </Box>
-        </Box>
         <Button
           startIcon={<LogoutIcon />}
           size="small"
@@ -149,9 +136,16 @@ export default function TraegerLayout() {
             <Typography variant="subtitle1" sx={{ fontWeight: 700, flexGrow: 1 }}>
               Überblick – Alle Einrichtungen
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' }, mr: 1 }}>
               Stand: {new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
             </Typography>
+            <ProfileAvatar
+              avatarUrl={profile?.avatar_url ?? null}
+              initials={avatarInitials}
+              size={34}
+              alt={profile?.name ?? 'Profil'}
+              onClick={() => navigate('/traeger/profil')}
+            />
           </Toolbar>
         </AppBar>
 
