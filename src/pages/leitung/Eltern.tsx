@@ -47,7 +47,7 @@ export default function LeitungEltern() {
   );
 
   return (
-    <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 900, mx: 'auto', width: '100%' }}>
       <Box sx={{ mb: 2.5 }}>
         <Typography variant="h6" sx={{ fontWeight: 700 }}>Eltern-Accounts</Typography>
         <Typography variant="caption" color="text.secondary">
