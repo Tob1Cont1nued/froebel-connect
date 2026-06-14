@@ -64,36 +64,14 @@ export default function TeamDashboard() {
       {/* Header */}
       <Card sx={{ mb: 2, background: 'linear-gradient(135deg, #1A3545 0%, #2D5468 100%)', color: 'white' }}>
         <CardContent sx={{ pb: '16px !important' }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-            <Box>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                {today.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
-              </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                Guten Morgen, {profile?.name?.split(' ')[0] ?? ''}!
-              </Typography>
-            </Box>
-            {eigeneMeldung ? (
-              <Chip
-                icon={<SickIcon sx={{ color: '#C2185B !important' }} />}
-                label="Krank gemeldet"
-                size="small"
-                onClick={() => zurueckziehen(eigeneMeldung.id)}
-                sx={{ bgcolor: 'rgba(194,24,91,0.2)', color: '#FCE4EC', fontWeight: 600, border: 'none', cursor: 'pointer', mt: 0.5 }}
-              />
-            ) : (
-              <Button
-                size="small"
-                startIcon={<SickIcon />}
-                onClick={() => { setKrankDialog(true); setKrankError(''); }}
-                sx={{ color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.3)', border: '1px solid', borderRadius: 2, whiteSpace: 'nowrap', mt: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
-              >
-                Krank melden
-              </Button>
-            )}
-          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+            {today.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Guten Morgen, {profile?.name?.split(' ')[0] ?? ''}!
+          </Typography>
           <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>{kitaName}</Typography>
             {aktuellKrank.length > 0 && (
               <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -105,6 +83,27 @@ export default function TeamDashboard() {
                   />
                 ))}
               </Box>
+            )}
+          </Box>
+          <Box sx={{ mt: 1.5 }}>
+            {eigeneMeldung ? (
+              <Button
+                fullWidth
+                startIcon={<SickIcon />}
+                onClick={() => zurueckziehen(eigeneMeldung.id)}
+                sx={{ bgcolor: 'rgba(194,24,91,0.25)', color: '#FCE4EC', fontWeight: 600, borderRadius: 2, py: 1, '&:hover': { bgcolor: 'rgba(194,24,91,0.4)' } }}
+              >
+                Krank gemeldet · Zurückziehen
+              </Button>
+            ) : (
+              <Button
+                fullWidth
+                startIcon={<SickIcon />}
+                onClick={() => { setKrankDialog(true); setKrankError(''); }}
+                sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.9)', fontWeight: 600, borderRadius: 2, py: 1, border: '1px solid rgba(255,255,255,0.25)', '&:hover': { bgcolor: 'rgba(255,255,255,0.18)' } }}
+              >
+                Krank melden
+              </Button>
             )}
           </Box>
         </CardContent>
