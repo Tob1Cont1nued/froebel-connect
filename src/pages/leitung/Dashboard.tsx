@@ -14,9 +14,11 @@ import ChildCareIcon from '@mui/icons-material/ChildCare';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
+import SickIcon from '@mui/icons-material/Sick';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useKitas } from '../../hooks/useKitas';
+import { useKrankmeldungen } from '../../hooks/useKrankmeldungen';
 
 interface KitaStats {
   kinder: number;
@@ -77,6 +79,7 @@ export default function LeitungDashboard() {
   const [termine, setTermine] = useState<Termin[]>([]);
 
   const kita = kitas.find((k) => k.id === profile?.kita_id);
+  const { aktuellKrank } = useKrankmeldungen();
 
   useEffect(() => {
     if (!profile?.kita_id) return;
@@ -112,6 +115,31 @@ export default function LeitungDashboard() {
           />
         )}
       </Box>
+
+      {/* Krankmeldungen */}
+      {aktuellKrank.length > 0 && (
+        <Card sx={{ mb: 3, border: '1px solid #FFCDD2', bgcolor: '#FFF8F8' }}>
+          <CardContent sx={{ py: '12px !important', px: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <SickIcon sx={{ color: '#C2185B', fontSize: 18 }} />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#C2185B' }}>
+                {aktuellKrank.length === 1 ? '1 Fachkraft krank gemeldet' : `${aktuellKrank.length} Fachkräfte krank gemeldet`}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {aktuellKrank.map((k) => (
+                <Chip
+                  key={k.id}
+                  icon={<SickIcon sx={{ fontSize: '14px !important', color: '#C2185B !important' }} />}
+                  label={k.fachkraft_name}
+                  size="small"
+                  sx={{ bgcolor: '#FCE4EC', color: '#C2185B', fontWeight: 600, border: 'none', fontSize: 12 }}
+                />
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
