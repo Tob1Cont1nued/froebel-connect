@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,8 +16,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import SearchIcon from '@mui/icons-material/Search';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import SickIcon from '@mui/icons-material/Sick';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { useKrankmeldungen } from '../../hooks/useKrankmeldungen';
 
 interface FachkraftRow {
   id: string;
@@ -35,6 +38,8 @@ export default function LeitungFachkraefte() {
   const [list, setList] = useState<FachkraftRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const { aktuellKrank } = useKrankmeldungen();
+  const krankIds = useMemo(() => new Set(aktuellKrank.map((k) => k.fachkraft_id)), [aktuellKrank]);
   const isMobile = useMediaQuery('(max-width:700px)');
 
   useEffect(() => {
@@ -77,15 +82,24 @@ export default function LeitungFachkraefte() {
         </Box>
       ) : isMobile ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {filtered.map((f) => (
-            <Card key={f.id} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Avatar sx={{ bgcolor: '#E3F2FD', color: '#1565C0', fontWeight: 700, fontSize: 14, flexShrink: 0 }}>{initials(f.name)}</Avatar>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>{f.name}</Typography>
-                <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{f.email}</Typography>
-              </Box>
-            </Card>
-          ))}
+          {filtered.map((f) => {
+            const isKrank = krankIds.has(f.id);
+            return (
+              <Card key={f.id} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5, border: isKrank ? '1px solid #FFCDD2' : undefined }}>
+                <Avatar sx={{ bgcolor: isKrank ? '#FCE4EC' : '#E3F2FD', color: isKrank ? '#C2185B' : '#1565C0', fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+                  {isKrank ? <SickIcon fontSize="small" /> : initials(f.name)}
+                </Avatar>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>{f.name}</Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{f.email}</Typography>
+                </Box>
+                {isKrank && (
+                  <Chip icon={<SickIcon sx={{ fontSize: '14px !important' }} />} label="Krank" size="small"
+                    sx={{ bgcolor: '#FCE4EC', color: '#C2185B', fontWeight: 600, border: 'none', fontSize: 11 }} />
+                )}
+              </Card>
+            );
+          })}
         </Box>
       ) : (
         <Card>
@@ -97,17 +111,23 @@ export default function LeitungFachkraefte() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filtered.map((f) => (
-                <TableRow key={f.id} hover>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Avatar sx={{ width: 32, height: 32, bgcolor: '#E3F2FD', color: '#1565C0', fontWeight: 700, fontSize: 12 }}>{initials(f.name)}</Avatar>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{f.name}</Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>{f.email}</TableCell>
-                </TableRow>
-              ))}
+              {filtered.map((f) => {
+                const isKrank = krankIds.has(f.id);
+                return (
+                  <TableRow key={f.id} hover sx={isKrank ? { bgcolor: '#FFF8F8' } : undefined}>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: isKrank ? '#FCE4EC' : '#E3F2FD', color: isKrank ? '#C2185B' : '#1565C0', fontWeight: 700, fontSize: 12 }}>
+                          {isKrank ? <SickIcon sx={{ fontSize: 16 }} /> : initials(f.name)}
+                        </Avatar>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{f.name}</Typography>
+                        {isKrank && <Chip label="Krank" size="small" sx={{ bgcolor: '#FCE4EC', color: '#C2185B', fontWeight: 600, border: 'none', fontSize: 11, height: 20 }} />}
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>{f.email}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </Card>
