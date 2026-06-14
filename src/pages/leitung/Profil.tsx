@@ -25,7 +25,7 @@ export default function LeitungProfil() {
 
       <Card sx={{ mb: 2 }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 3 }}>
-          <AvatarPicker size={88} />
+          <AvatarPicker size={88} initials={profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?'} />
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>{profile?.name ?? '–'}</Typography>
             <Typography variant="body2" color="text.secondary">{profile?.email ?? '–'}</Typography>

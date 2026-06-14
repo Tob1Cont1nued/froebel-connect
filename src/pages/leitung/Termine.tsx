@@ -17,7 +17,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 
@@ -59,12 +59,13 @@ export default function LeitungTermine() {
   const handleSave = async () => {
     if (!form.title.trim() || !form.date) { setError('Titel und Datum sind Pflichtfelder.'); return; }
     setSaving(true); setError('');
-    const { error: err } = await supabase.from('appointments').insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: err } = await (supabase as any).from('appointments').insert({
       kita_id: profile!.kita_id!,
       title: form.title.trim(),
       date: new Date(form.date).toISOString(),
       time: form.time || null,
-      type: form.type as 'event' | 'closure' | 'meeting' | 'info',
+      type: form.type,
       description: form.description.trim() || null,
     });
     setSaving(false);
