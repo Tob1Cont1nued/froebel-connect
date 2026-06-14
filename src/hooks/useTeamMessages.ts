@@ -40,8 +40,22 @@ export function useTeamMessages() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'team_messages', filter: `kita_id=eq.${profile.kita_id}` },
         (payload) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          setMessages((prev) => [...prev, payload.new as any]);
+          const incoming = payload.new as TeamMessage;
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === incoming.id)) return prev;
+            // replace any matching optimistic message (same sender + message + within 10s)
+            const optimisticIdx = prev.findIndex(
+              (m) => m.id.startsWith('optimistic-') &&
+                m.sender_id === incoming.sender_id &&
+                m.message === incoming.message
+            );
+            if (optimisticIdx !== -1) {
+              const next = [...prev];
+              next[optimisticIdx] = incoming;
+              return next;
+            }
+            return [...prev, incoming];
+          });
         }
       )
       .subscribe();
@@ -52,13 +66,28 @@ export function useTeamMessages() {
 
   const send = async (message: string) => {
     if (!profile?.kita_id || !message.trim()) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from('team_messages').insert({
-      kita_id: profile.kita_id,
+    const optimistic: TeamMessage = {
+      id: `optimistic-${Date.now()}`,
       sender_id: profile.id,
-      sender_name: profile.name,
+      sender_name: profile.name ?? '',
       message: message.trim(),
-    });
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any)
+      .from('team_messages')
+      .insert({
+        kita_id: profile.kita_id,
+        sender_id: profile.id,
+        sender_name: profile.name,
+        message: message.trim(),
+      })
+      .select()
+      .single();
+    if (data) {
+      setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? data : m)));
+    }
   };
 
   return { messages, loading, send };
