@@ -18,36 +18,48 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import ChildCareIcon from '@mui/icons-material/ChildCare';
+import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import ProfileAvatar from './ProfileAvatar';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 
 const DRAWER_WIDTH = 240;
 const HEADER_HEIGHT = 80;
 
 const navItems = [
-  { label: 'Dashboard', icon: <HomeOutlinedIcon />, path: '/team/dashboard' },
-  { label: 'Nachrichten', icon: <ChatBubbleOutlinedIcon />, path: '/team/nachrichten' },
-  { label: 'Kinder', icon: <PeopleOutlinedIcon />, path: '/team/kinder' },
-  { label: 'Dienstplan', icon: <CalendarTodayOutlinedIcon />, path: '/team/dienstplan' },
-  { label: 'Mehr', icon: <GridViewOutlinedIcon />, path: '/team/mehr' },
+  { label: 'Dashboard',    icon: <HomeOutlinedIcon />,         path: '/leitung/dashboard' },
+  { label: 'Fachkräfte',  icon: <PeopleOutlinedIcon />,       path: '/leitung/fachkraefte' },
+  { label: 'Kinder',       icon: <ChildCareIcon />,            path: '/leitung/kinder' },
+  { label: 'Eltern',       icon: <FamilyRestroomIcon />,       path: '/leitung/eltern' },
+  { label: 'Termine',      icon: <CalendarTodayOutlinedIcon />,path: '/leitung/termine' },
+  { label: 'Rundmails',    icon: <EmailOutlinedIcon />,        path: '/leitung/rundmails' },
 ];
 
-export default function TeamLayout() {
+const mobileNav = [
+  navItems[0],
+  navItems[2],
+  navItems[3],
+  navItems[4],
+  { label: 'Mehr', icon: <GridViewOutlinedIcon />, path: '/leitung/mehr' },
+];
+
+export default function LeitungLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut, profile } = useAuth();
   const { unreadCount } = useApp();
   const avatarInitials = profile?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?';
 
-  const navValue = navItems.findIndex((item) => location.pathname.startsWith(item.path));
-  const currentLabel = navValue >= 0 ? navItems[navValue].label : '';
+  const navValue = mobileNav.findIndex((item) => location.pathname.startsWith(item.path));
+  const currentLabel = navItems.find((item) => location.pathname.startsWith(item.path))?.label ?? 'Leitung';
 
   const sidebarContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -58,7 +70,7 @@ export default function TeamLayout() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
           <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#95C11F' }} />
           <Typography variant="caption" sx={{ color: '#95C11F', fontWeight: 600 }}>
-            Fachkraft
+            Kita-Leitung
           </Typography>
         </Box>
       </Box>
@@ -77,11 +89,7 @@ export default function TeamLayout() {
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.08)', color: 'white' },
                 }}
               >
-                <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
-                  {item.path === '/team/nachrichten' && unreadCount > 0 ? (
-                    <Badge badgeContent={unreadCount} color="error">{item.icon}</Badge>
-                  ) : item.icon}
-                </ListItemIcon>
+                <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>{item.icon}</ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   slotProps={{ primary: { sx: { fontSize: 14, fontWeight: active ? 600 : 400 } } }}
@@ -93,22 +101,22 @@ export default function TeamLayout() {
       </List>
       <Box sx={{ p: 2 }}>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 1.5 }} />
-        {profile?.is_leitung && (
+        <Tooltip title="Zurück zum Team-Portal" placement="right">
           <Button
-            startIcon={<AdminPanelSettingsOutlinedIcon />}
+            startIcon={<ArrowBackIcon />}
             size="small"
             fullWidth
-            sx={{ mb: 0.5, color: '#95C11F', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
-            onClick={() => navigate('/leitung/dashboard')}
+            sx={{ mb: 0.5, color: 'rgba(255,255,255,0.65)', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
+            onClick={() => navigate('/team/dashboard')}
           >
-            Leitung-Verwaltung
+            Team-Portal
           </Button>
-        )}
+        </Tooltip>
         <Button
           startIcon={<LogoutIcon />}
           size="small"
           fullWidth
-          sx={{ mt: 1, color: 'rgba(255,255,255,0.65)', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
+          sx={{ color: 'rgba(255,255,255,0.65)', justifyContent: 'flex-start', textTransform: 'none', '&:hover': { color: 'white' } }}
           onClick={async () => { await signOut(); navigate('/login'); }}
         >
           Abmelden
@@ -119,7 +127,6 @@ export default function TeamLayout() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* Desktop sidebar */}
       <Drawer
         variant="permanent"
         sx={{
@@ -138,34 +145,19 @@ export default function TeamLayout() {
         {sidebarContent}
       </Drawer>
 
-      {/* Main column */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100dvh', minWidth: 0 }}>
         <AppBar position="static" sx={{ bgcolor: '#1A3545', color: 'white', flexShrink: 0 }} elevation={1}>
           <Toolbar sx={{ minHeight: { md: HEADER_HEIGHT } }}>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 800, color: 'white', display: { md: 'none' } }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 800, color: 'white', display: { md: 'none' } }}>
               FRÖBEL<span style={{ color: '#95C11F' }}>.connect</span>
             </Typography>
             <Typography
               variant="caption"
-              sx={{
-                bgcolor: 'rgba(149,193,31,0.25)',
-                color: '#95C11F',
-                px: 1,
-                py: 0.25,
-                borderRadius: 2,
-                display: { md: 'none' },
-                ml: 1,
-              }}
+              sx={{ bgcolor: 'rgba(149,193,31,0.25)', color: '#95C11F', px: 1, py: 0.25, borderRadius: 2, display: { md: 'none' }, ml: 1 }}
             >
-              Fachkraft
+              Leitung
             </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: 700, color: 'white', display: { xs: 'none', md: 'block' } }}
-            >
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white', display: { xs: 'none', md: 'block' } }}>
               {currentLabel}
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
@@ -173,32 +165,38 @@ export default function TeamLayout() {
               color="inherit"
               size="small"
               sx={{ mr: 0.5 }}
-              aria-label={unreadCount > 0 ? `Benachrichtigungen, ${unreadCount} ungelesen` : 'Benachrichtigungen'}
               onClick={() => navigate('/team/nachrichten')}
+              aria-label="Nachrichten"
             >
               <Badge badgeContent={unreadCount > 0 ? unreadCount : undefined} color="error">
                 <NotificationsOutlinedIcon />
               </Badge>
             </IconButton>
-            <ProfileAvatar avatarUrl={profile?.avatar_url} initials={avatarInitials} size={34} alt={profile?.name ?? 'Profil'} onClick={() => navigate('/team/profil')} />
+            <ProfileAvatar
+              avatarUrl={profile?.avatar_url}
+              initials={avatarInitials}
+              size={34}
+              alt={profile?.name ?? 'Profil'}
+              onClick={() => navigate('/leitung/profil')}
+            />
           </Toolbar>
         </AppBar>
 
-        <Box component="main" id="main-content" sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <Box component="main" sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <Outlet />
         </Box>
 
         <Paper sx={{ display: { md: 'none' }, flexShrink: 0, borderRadius: 0 }} elevation={3}>
           <BottomNavigation
             value={navValue >= 0 ? navValue : false}
-            onChange={(_, newValue: number) => navigate(navItems[newValue].path)}
+            onChange={(_, newValue: number) => navigate(mobileNav[newValue].path)}
             showLabels
           >
-            {navItems.map((item) => (
+            {mobileNav.map((item) => (
               <BottomNavigationAction
                 key={item.path}
                 label={item.label}
-                icon={item.path === '/team/nachrichten' && unreadCount > 0 ? <Badge badgeContent={unreadCount} color="error">{item.icon}</Badge> : item.icon}
+                icon={item.icon}
                 sx={{ minWidth: 0, '& .MuiBottomNavigationAction-label': { fontSize: 10 } }}
               />
             ))}

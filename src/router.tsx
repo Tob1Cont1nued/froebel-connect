@@ -29,6 +29,15 @@ import TraegerEltern from './pages/traeger/Eltern';
 import TraegerProfil from './pages/traeger/Profil';
 import TraegerRundmails from './pages/traeger/Rundmails';
 import TraegerAuswertungen from './pages/traeger/Auswertungen';
+import LeitungLayout from './components/LeitungLayout';
+import LeitungDashboard from './pages/leitung/Dashboard';
+import LeitungFachkraefte from './pages/leitung/Fachkraefte';
+import LeitungKinder from './pages/leitung/Kinder';
+import LeitungEltern from './pages/leitung/Eltern';
+import LeitungTermine from './pages/leitung/Termine';
+import LeitungRundmails from './pages/leitung/Rundmails';
+import LeitungProfil from './pages/leitung/Profil';
+import LeitungMehr from './pages/leitung/Mehr';
 
 import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
@@ -105,6 +114,22 @@ export const router = createBrowserRouter([
       { path: 'profil', element: <TraegerProfil /> },
       { path: 'rundmails', element: <TraegerRundmails /> },
       { path: 'auswertungen', element: <TraegerAuswertungen /> },
+    ],
+  },
+  {
+    path: '/leitung',
+    errorElement: <ErrorPage />,
+    element: <ProtectedRoute role="leitung"><LeitungLayout /></ProtectedRoute>,
+    children: [
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: 'dashboard',    element: <LeitungDashboard /> },
+      { path: 'fachkraefte', element: <LeitungFachkraefte /> },
+      { path: 'kinder',      element: <LeitungKinder /> },
+      { path: 'eltern',      element: <LeitungEltern /> },
+      { path: 'termine',     element: <LeitungTermine /> },
+      { path: 'rundmails',   element: <LeitungRundmails /> },
+      { path: 'profil',      element: <LeitungProfil /> },
+      { path: 'mehr',        element: <LeitungMehr /> },
     ],
   },
 ]);

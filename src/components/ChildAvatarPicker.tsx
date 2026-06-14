@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -114,11 +115,10 @@ export default function ChildAvatarPicker({ childId, emoji, photoUrl, name, size
 
   return (
     <>
-      <Box
-        role="button"
+      <ButtonBase
         aria-label={`Avatar von ${name} ändern`}
-        sx={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
         onClick={() => setOpen(true)}
+        sx={{ position: 'relative', display: 'inline-flex', borderRadius: '50%' }}
       >
         {renderChildAvatar(emoji, photoUrl, size, name)}
         <Box sx={{
@@ -127,10 +127,11 @@ export default function ChildAvatarPicker({ childId, emoji, photoUrl, name, size
           bgcolor: '#1A3545', borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: '2px solid white',
+          pointerEvents: 'none',
         }}>
           <EditIcon sx={{ fontSize: size * 0.2, color: 'white' }} />
         </Box>
-      </Box>
+      </ButtonBase>
 
       <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
         <DialogTitle>Avatar für {name} ändern</DialogTitle>

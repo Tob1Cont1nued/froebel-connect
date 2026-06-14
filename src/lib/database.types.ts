@@ -14,6 +14,7 @@ export interface Database {
           kita_id: string | null;
           avatar: string | null;
           avatar_url: string | null;
+          is_leitung: boolean;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at'>;

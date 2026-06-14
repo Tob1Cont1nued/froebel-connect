@@ -7,12 +7,19 @@ import type { Role } from '../lib/database.types';
 
 interface Props {
   children: React.ReactNode;
-  role: Role;
+  role: Role | 'leitung';
 }
 
 function IdleLogoutWatcher() {
   useIdleLogout();
   return null;
+}
+
+function defaultRedirect(profileRole: Role, isLeitung: boolean): string {
+  if (profileRole === 'fachkraft' && isLeitung) return '/leitung/dashboard';
+  if (profileRole === 'fachkraft') return '/team/dashboard';
+  if (profileRole === 'traeger') return '/traeger/dashboard';
+  return '/eltern/dashboard';
 }
 
 export default function ProtectedRoute({ children, role }: Props) {
@@ -28,11 +35,15 @@ export default function ProtectedRoute({ children, role }: Props) {
 
   if (!session) return <Navigate to="/login" replace />;
 
-  if (profile && profile.role !== role) {
-    const redirect = profile.role === 'eltern' ? '/eltern/dashboard'
-      : profile.role === 'fachkraft' ? '/team/dashboard'
-      : '/traeger/dashboard';
-    return <Navigate to={redirect} replace />;
+  if (profile) {
+    const isLeitung = profile.is_leitung ?? false;
+    // leitung pseudo-role: fachkraft with is_leitung flag
+    if (role === 'leitung' && !(profile.role === 'fachkraft' && isLeitung)) {
+      return <Navigate to={defaultRedirect(profile.role, isLeitung)} replace />;
+    }
+    if (role !== 'leitung' && profile.role !== role) {
+      return <Navigate to={defaultRedirect(profile.role, isLeitung)} replace />;
+    }
   }
 
   return <><IdleLogoutWatcher />{children}</>;

@@ -23,7 +23,8 @@ export default function Login() {
   // Sobald das Profil geladen ist und ein Login lief → weiterleiten
   useEffect(() => {
     if (pendingRedirect && profile) {
-      if (profile.role === 'fachkraft') navigate('/team/dashboard');
+      if (profile.role === 'fachkraft' && profile.is_leitung) navigate('/leitung/dashboard');
+      else if (profile.role === 'fachkraft') navigate('/team/dashboard');
       else if (profile.role === 'traeger') navigate('/traeger/dashboard');
       else navigate('/eltern/dashboard');
     }
