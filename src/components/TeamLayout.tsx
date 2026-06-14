@@ -26,6 +26,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 
 const DRAWER_WIDTH = 240;
@@ -36,6 +37,7 @@ const navItems = [
   { label: 'Nachrichten', icon: <ChatBubbleOutlinedIcon />, path: '/team/nachrichten' },
   { label: 'Kinder', icon: <PeopleOutlinedIcon />, path: '/team/kinder' },
   { label: 'Dienstplan', icon: <CalendarTodayOutlinedIcon />, path: '/team/dienstplan' },
+  { label: 'Aufgaben', icon: <ChecklistIcon />, path: '/team/todos' },
   { label: 'Mehr', icon: <GridViewOutlinedIcon />, path: '/team/mehr' },
 ];
 

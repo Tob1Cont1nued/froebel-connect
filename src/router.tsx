@@ -19,6 +19,7 @@ import TeamProfil from './pages/team/Profil';
 import TeamNachrichten, { EmptyState as TeamNachrichtenEmpty } from './pages/team/Nachrichten';
 import TeamNachrichtenDetail from './pages/team/NachrichtenDetail';
 import TeamKanal from './pages/team/TeamKanal';
+import TeamTodos from './pages/team/Todos';
 import TeamMehr from './pages/team/Mehr';
 import TraegerLayout from './components/TraegerLayout';
 import TraegerDashboard from './pages/traeger/Dashboard';
@@ -94,6 +95,7 @@ export const router = createBrowserRouter([
       },
       { path: 'kinder', element: <TeamKinder /> },
       { path: 'dienstplan', element: <TeamDienstplan /> },
+      { path: 'todos', element: <TeamTodos /> },
       { path: 'mehr', element: <TeamMehr /> },
       { path: 'profil', element: <TeamProfil /> },
       { path: 'datenschutz', element: <Datenschutz backPath="/team/mehr" /> },
