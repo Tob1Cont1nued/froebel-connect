@@ -29,7 +29,7 @@ import TraegerEltern from './pages/traeger/Eltern';
 import TraegerProfil from './pages/traeger/Profil';
 import TraegerRundmails from './pages/traeger/Rundmails';
 import TraegerAuswertungen from './pages/traeger/Auswertungen';
-import ComingSoon from './pages/ComingSoon';
+
 import ErrorPage from './pages/ErrorPage';
 import Datenschutz from './pages/Datenschutz';
 import Sicherheit from './pages/Sicherheit';

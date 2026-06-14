@@ -37,17 +37,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function StatSkeleton() {
-  return (
-    <Card>
-      <CardContent>
-        <Skeleton width="50%" sx={{ mb: 1 }} />
-        <Skeleton height={200} variant="rectangular" sx={{ borderRadius: 1 }} />
-      </CardContent>
-    </Card>
-  );
-}
-
 // Custom dot for line chart
 function CustomDot({ cx, cy }: { cx?: number; cy?: number }) {
   return <circle cx={cx} cy={cy} r={4} fill="#95C11F" stroke="#fff" strokeWidth={2} />;
@@ -202,7 +191,7 @@ export default function TraegerAuswertungen() {
                 <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#999' }} axisLine={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{ borderRadius: 8, border: '1px solid #E0E0E0', fontSize: 13 }}
-                  formatter={(val: number) => [`${val} Abwesenheiten`, '']}
+                  formatter={(val) => [`${val} Abwesenheiten`, '']}
                 />
                 <Line
                   type="monotone"
