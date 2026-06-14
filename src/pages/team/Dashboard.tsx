@@ -55,7 +55,8 @@ export default function TeamDashboard() {
     if (!krankForm.from_date || !krankForm.to_date) { setKrankError('Bitte Datum eingeben.'); return; }
     if (krankForm.to_date < krankForm.from_date) { setKrankError('Enddatum muss nach dem Startdatum liegen.'); return; }
     setKrankError('');
-    await melden(krankForm.from_date, krankForm.to_date, krankForm.note);
+    const err = await melden(krankForm.from_date, krankForm.to_date, krankForm.note);
+    if (err) { setKrankError(err); return; }
     setKrankDialog(false);
   };
 

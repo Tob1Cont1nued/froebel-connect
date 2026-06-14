@@ -44,23 +44,28 @@ export function useKrankmeldungen() {
 
   useEffect(() => { load(); }, [load]);
 
-  const melden = async (from_date: string, to_date: string, note?: string) => {
-    if (!profile?.kita_id) return;
+  const melden = async (from_date: string, to_date: string, note?: string): Promise<string | null> => {
+    if (!profile?.kita_id) return 'Kein Kita-Profil gefunden.';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from('krankmeldungen').insert({
+    const { error } = await (supabase as any).from('krankmeldungen').insert({
       fachkraft_id: profile.id,
       kita_id: profile.kita_id,
       from_date,
       to_date,
       note: note || null,
     });
+    if (error) {
+      console.error('krankmeldungen insert error:', error);
+      return error.message ?? 'Unbekannter Fehler';
+    }
     await load();
+    return null;
   };
 
   const zurueckziehen = async (id: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from('krankmeldungen').delete().eq('id', id);
-    setKrankmeldungen((prev) => prev.filter((k) => k.id !== id));
+    const { error } = await (supabase as any).from('krankmeldungen').delete().eq('id', id);
+    if (!error) setKrankmeldungen((prev) => prev.filter((k) => k.id !== id));
   };
 
   const today = new Date().toISOString().split('T')[0];
