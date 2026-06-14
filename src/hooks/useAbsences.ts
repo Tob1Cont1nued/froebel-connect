@@ -12,6 +12,7 @@ export interface AbsenceItem {
   status: 'pending' | 'confirmed';
   childName: string | null;
   childEmoji: string | null;
+  childPhotoUrl: string | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +27,7 @@ function toItem(a: any): AbsenceItem {
     status: a.status,
     childName: a.children?.name ?? null,
     childEmoji: a.children?.emoji ?? null,
+    childPhotoUrl: a.children?.photo_url ?? null,
   };
 }
 
@@ -37,7 +39,7 @@ export function useAbsences() {
   async function load() {
     if (!session) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (supabase as any).from('absences').select('*, children(name, emoji)').order('from_date', { ascending: true });
+    const { data } = await (supabase as any).from('absences').select('*, children(name, emoji, photo_url)').order('from_date', { ascending: true });
     setAbsences(((data as any[]) ?? []).map(toItem));
     setLoading(false);
   }

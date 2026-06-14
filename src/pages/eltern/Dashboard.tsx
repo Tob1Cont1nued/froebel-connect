@@ -18,6 +18,12 @@ import { useChildren } from '../../hooks/useChildren';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useAbsences } from '../../hooks/useAbsences';
 
+function childAvatar(child: { emoji: string; photo_url: string | null }) {
+  if (child.photo_url?.startsWith('preset:')) return { type: 'emoji' as const, value: child.photo_url.replace('preset:', '') };
+  if (child.photo_url?.startsWith('http')) return { type: 'photo' as const, value: child.photo_url };
+  return { type: 'emoji' as const, value: child.emoji };
+}
+
 const appointmentColors = {
   event: '#1565C0', closure: '#C62828', meeting: '#2E7D32', info: '#E65100',
 };
@@ -63,7 +69,9 @@ export default function Dashboard() {
                   <Box key={child.id}>
                     {i > 0 && <Divider sx={{ mb: 1, borderColor: 'rgba(255,255,255,0.1)' }} />}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ fontSize: 32 }}>{child.emoji}</Box>
+                      {(() => { const av = childAvatar(child); return av.type === 'photo'
+                        ? <Box component="img" src={av.value} sx={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        : <Box sx={{ fontSize: 32 }}>{av.value}</Box>; })()}
                       <Box>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{child.name}</Typography>
                         {child.kita_name && <Typography variant="body2" sx={{ opacity: 0.8 }}>{child.kita_name}</Typography>}
@@ -107,7 +115,9 @@ export default function Dashboard() {
                   <Box key={a.id}>
                     {i > 0 && <Divider sx={{ my: 0.5 }} />}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, px: 1, borderRadius: 2 }}>
-                      <Box sx={{ fontSize: 20 }}>{a.childEmoji ?? '👶'}</Box>
+                      {(() => { const av = childAvatar({ emoji: a.childEmoji ?? '👶', photo_url: a.childPhotoUrl ?? null }); return av.type === 'photo'
+                        ? <Box component="img" src={av.value} sx={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        : <Box sx={{ fontSize: 20 }}>{av.value}</Box>; })()}
                       <Box sx={{ flex: 1 }}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {a.childName ?? ''} · {a.reason}
