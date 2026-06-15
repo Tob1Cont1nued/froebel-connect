@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRÖBEL.connect – Zugangsdaten</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .page {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 18mm 18mm 16mm;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 3px solid #95C11F;
+      margin-bottom: 28px;
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1A3545;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: #95C11F; }
+    .header-sub {
+      font-size: 12px;
+      color: #6b7a8a;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    /* ── QR section ── */
+    .qr-section {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      background: #f8fdf0;
+      border: 2px solid #d4edaa;
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+    }
+    #qrcode {
+      flex-shrink: 0;
+    }
+    #qrcode canvas, #qrcode img {
+      border-radius: 8px;
+      display: block;
+    }
+    .qr-info { flex: 1; }
+    .qr-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6b7a8a;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+    .qr-url {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1A3545;
+      word-break: break-all;
+      margin-bottom: 18px;
+    }
+    .divider-h {
+      border: none;
+      border-top: 1px solid #d4edaa;
+      margin: 16px 0;
+    }
+    .tiny-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6b7a8a;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+    .tiny-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #1A3545;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 18px;
+    }
+    .tiny-icon { font-size: 18px; }
+    .tiny-url  { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
+    .tiny-hint {
+      font-size: 11px;
+      color: #8aaa60;
+      margin-top: 8px;
+    }
+
+    /* ── Accounts ── */
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1A3545;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: #eee;
+      border-radius: 2px;
+    }
+
+    .accounts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .account {
+      display: flex;
+      align-items: stretch;
+      border: 1.5px solid #e8edf2;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .account-badge {
+      width: 6px;
+      flex-shrink: 0;
+    }
+    .badge-eltern    { background: #4CAF50; }
+    .badge-fachkraft { background: #1A3545; }
+    .badge-leitung   { background: #95C11F; }
+
+    .account-body {
+      flex: 1;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: auto 1fr 1fr auto;
+      align-items: center;
+      gap: 12px 20px;
+    }
+    .account-icon { font-size: 28px; }
+    .account-role-wrap {}
+    .account-role {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7a8a;
+      margin-bottom: 2px;
+    }
+    .account-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1A3545;
+    }
+    .account-email-wrap {}
+    .account-field-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 2px;
+    }
+    .account-email {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A3545;
+      font-family: 'Courier New', monospace;
+    }
+    .pw-box {
+      background: #f4f6f8;
+      border: 1px solid #dde3ea;
+      border-radius: 8px;
+      padding: 8px 14px;
+      text-align: center;
+    }
+    .pw-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #6b7a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 3px;
+    }
+    .pw-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1A3545;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background: #fff8e1;
+      border: 1.5px solid #ffe082;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #5d4037;
+      line-height: 1.6;
+    }
+    .info-box strong { color: #3e2723; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #aab0b8;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; width: 100%; min-height: auto; }
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">FRÖBEL<span>.connect</span></div>
+    <div class="header-sub">Zugangsdaten & App-Link<br/>Testphase 2026</div>
+  </div>
+
+  <!-- QR + URL -->
+  <div class="qr-section">
+    <div id="qrcode"></div>
+    <div class="qr-info">
+      <div class="qr-label">App-Adresse (vollständig)</div>
+      <div class="qr-url">froebel-connect-1tq4.vercel.app</div>
+      <hr class="divider-h" />
+      <div class="tiny-label">Kurzlink – am PC eintippen</div>
+      <div class="tiny-box">
+        <span class="tiny-icon">🔗</span>
+        <span class="tiny-url">tinyurl.com/237worc2</span>
+      </div>
+      <div class="tiny-hint">Einfach im Browser eingeben – ohne https://</div>
+    </div>
+  </div>
+
+  <!-- Accounts -->
+  <div class="section-title">Testaccounts</div>
+
+  <div class="accounts">
+
+    <div class="account">
+      <div class="account-badge badge-eltern"></div>
+      <div class="account-body">
+        <div class="account-icon">👨‍👩‍👧</div>
+        <div class="account-role-wrap">
+          <div class="account-role">Eltern-Portal</div>
+          <div class="account-name">Testmama Müller</div>
+        </div>
+        <div class="account-email-wrap">
+          <div class="account-field-label">E-Mail</div>
+          <div class="account-email">elternteil@froebel-muenster.de</div>
+        </div>
+        <div class="pw-box">
+          <div class="pw-label">Passwort</div>
+          <div class="pw-value">Test1234!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="account">
+      <div class="account-badge badge-fachkraft"></div>
+      <div class="account-body">
+        <div class="account-icon">👩‍🏫</div>
+        <div class="account-role-wrap">
+          <div class="account-role">Fachkraft-Portal</div>
+          <div class="account-name">Testkollegin Schmidt</div>
+        </div>
+        <div class="account-email-wrap">
+          <div class="account-field-label">E-Mail</div>
+          <div class="account-email">fachkraft@froebel-muenster.de</div>
+        </div>
+        <div class="pw-box">
+          <div class="pw-label">Passwort</div>
+          <div class="pw-value">Test1234!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="account">
+      <div class="account-badge badge-leitung"></div>
+      <div class="account-body">
+        <div class="account-icon">🏫</div>
+        <div class="account-role-wrap">
+          <div class="account-role">Leitung-Portal</div>
+          <div class="account-name">Testleiterin Weber</div>
+        </div>
+        <div class="account-email-wrap">
+          <div class="account-field-label">E-Mail</div>
+          <div class="account-email">leitung@froebel-muenster.de</div>
+        </div>
+        <div class="pw-box">
+          <div class="pw-label">Passwort</div>
+          <div class="pw-value">Test1234!</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Hinweis -->
+  <div class="info-box">
+    <strong>Hinweis:</strong> Diese Zugangsdaten sind ausschließlich für die Testphase bestimmt.
+    Bitte nicht an Dritte weitergeben. Nach Abschluss der Testphase werden die Accounts gelöscht
+    und individuelle Zugänge eingerichtet. Die Leitung-Rolle hat Zugriff auf das Fachkraft-Portal
+    <em>und</em> die Leitungs-Verwaltung.
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>FRÖBEL.connect · DSGVO-konform · Hosting in Deutschland</span>
+    <span>Kita Münster · Testphase 2026</span>
+  </div>
+
+</div>
+
+<script>
+  new QRCode(document.getElementById('qrcode'), {
+    text: 'https://froebel-connect-1tq4.vercel.app/',
+    width: 160,
+    height: 160,
+    colorDark: '#1A3545',
+    colorLight: '#f8fdf0',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>
