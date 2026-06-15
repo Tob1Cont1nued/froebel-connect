@@ -16,7 +16,7 @@ export interface AbsenceItem {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function toItem(a: any): AbsenceItem {
+export function absenceRowToItem(a: any): AbsenceItem {
   return {
     id: a.id,
     childId: a.child_id,
@@ -40,7 +40,7 @@ export function useAbsences() {
     if (!session) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (supabase as any).from('absences').select('*, children(name, emoji, photo_url)').order('from_date', { ascending: true });
-    setAbsences(((data as any[]) ?? []).map(toItem));
+    setAbsences(((data as any[]) ?? []).map(absenceRowToItem));
     setLoading(false);
   }
 
@@ -59,7 +59,7 @@ export function useAbsences() {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await supabase.from('absences').insert(payload as any).select('*').single();
-    if (data) setAbsences((prev) => [toItem(data), ...prev]);
+    if (data) setAbsences((prev) => [absenceRowToItem(data), ...prev]);
   };
 
   return { absences, loading, addAbsence };

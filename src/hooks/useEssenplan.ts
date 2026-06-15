@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { localDateStr, addDays } from '../lib/dateUtils';
 
 export interface EssenplanEintrag {
   id: string;
@@ -11,18 +12,6 @@ export interface EssenplanEintrag {
   created_by: string | null;
 }
 
-function localDateStr(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${dd}`;
-}
-
-function addDays(d: Date, n: number): Date {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
-}
 
 export function useEssenplan(weekStart: Date) {
   const { profile } = useAuth();
@@ -80,4 +69,4 @@ export function useEssenplan(weekStart: Date) {
   return { eintraege, loading, upsert, remove, reload: load };
 }
 
-export { localDateStr, addDays };
+export { localDateStr, addDays } from '../lib/dateUtils';

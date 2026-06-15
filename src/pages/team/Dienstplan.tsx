@@ -17,32 +17,8 @@ import SickIcon from '@mui/icons-material/Sick';
 import { useShifts } from '../../hooks/useShifts';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { getMonday, addDays, localDateStr as toDateStr, isoWeekNumber } from '../../lib/dateUtils';
 
-function getMonday(date: Date): Date {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();
-  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-  return d;
-}
-
-function addDays(date: Date, n: number): Date {
-  const d = new Date(date);
-  d.setDate(d.getDate() + n);
-  return d;
-}
-
-function toDateStr(d: Date) {
-  return d.toISOString().split('T')[0];
-}
-
-function formatKW(monday: Date): number {
-  const d = new Date(monday);
-  d.setHours(12);
-  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
-  const week1 = new Date(d.getFullYear(), 0, 4);
-  return 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
-}
 
 const DAY_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
 
@@ -352,7 +328,7 @@ export default function TeamDienstplan() {
   }, [staffMap, krankMap, krankmeldungen, days]);
 
   const friday = addDays(weekStart, 4);
-  const kw = formatKW(weekStart);
+  const kw = isoWeekNumber(weekStart);
 
   return (
     <Box sx={{ p: 2, maxWidth: 900, mx: 'auto', width: '100%' }}>
