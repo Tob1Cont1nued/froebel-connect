@@ -40,58 +40,64 @@ BEGIN
   -- raw_user_meta_data liefert Name und Rolle an den Trigger.
 
   -- Elternteil
-  INSERT INTO auth.users (
-    id, instance_id, aud, role,
-    email, encrypted_password,
-    email_confirmed_at, created_at, updated_at,
-    raw_app_meta_data, raw_user_meta_data,
-    is_super_admin, confirmation_token, recovery_token,
-    email_change_token_new, email_change
-  ) VALUES (
-    v_eltern_id, v_instance_id, 'authenticated', 'authenticated',
-    'elternteil@froebel-muenster.de',
-    crypt('Test1234!', gen_salt('bf')),
-    now(), now(), now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Testmama Müller","role":"eltern"}',
-    false, '', '', '', ''
-  ) ON CONFLICT (email) DO NOTHING;
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'elternteil@froebel-muenster.de') THEN
+    INSERT INTO auth.users (
+      id, instance_id, aud, role,
+      email, encrypted_password,
+      email_confirmed_at, created_at, updated_at,
+      raw_app_meta_data, raw_user_meta_data,
+      is_super_admin, confirmation_token, recovery_token,
+      email_change_token_new, email_change
+    ) VALUES (
+      v_eltern_id, v_instance_id, 'authenticated', 'authenticated',
+      'elternteil@froebel-muenster.de',
+      crypt('Test1234!', gen_salt('bf')),
+      now(), now(), now(),
+      '{"provider":"email","providers":["email"]}',
+      '{"name":"Testmama Müller","role":"eltern"}',
+      false, '', '', '', ''
+    );
+  END IF;
 
   -- Fachkraft
-  INSERT INTO auth.users (
-    id, instance_id, aud, role,
-    email, encrypted_password,
-    email_confirmed_at, created_at, updated_at,
-    raw_app_meta_data, raw_user_meta_data,
-    is_super_admin, confirmation_token, recovery_token,
-    email_change_token_new, email_change
-  ) VALUES (
-    v_fachkraft_id, v_instance_id, 'authenticated', 'authenticated',
-    'fachkraft@froebel-muenster.de',
-    crypt('Test1234!', gen_salt('bf')),
-    now(), now(), now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Testkollegin Schmidt","role":"fachkraft"}',
-    false, '', '', '', ''
-  ) ON CONFLICT (email) DO NOTHING;
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'fachkraft@froebel-muenster.de') THEN
+    INSERT INTO auth.users (
+      id, instance_id, aud, role,
+      email, encrypted_password,
+      email_confirmed_at, created_at, updated_at,
+      raw_app_meta_data, raw_user_meta_data,
+      is_super_admin, confirmation_token, recovery_token,
+      email_change_token_new, email_change
+    ) VALUES (
+      v_fachkraft_id, v_instance_id, 'authenticated', 'authenticated',
+      'fachkraft@froebel-muenster.de',
+      crypt('Test1234!', gen_salt('bf')),
+      now(), now(), now(),
+      '{"provider":"email","providers":["email"]}',
+      '{"name":"Testkollegin Schmidt","role":"fachkraft"}',
+      false, '', '', '', ''
+    );
+  END IF;
 
   -- Leitung
-  INSERT INTO auth.users (
-    id, instance_id, aud, role,
-    email, encrypted_password,
-    email_confirmed_at, created_at, updated_at,
-    raw_app_meta_data, raw_user_meta_data,
-    is_super_admin, confirmation_token, recovery_token,
-    email_change_token_new, email_change
-  ) VALUES (
-    v_leitung_id, v_instance_id, 'authenticated', 'authenticated',
-    'leitung@froebel-muenster.de',
-    crypt('Test1234!', gen_salt('bf')),
-    now(), now(), now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"name":"Testleiterin Weber","role":"fachkraft"}',
-    false, '', '', '', ''
-  ) ON CONFLICT (email) DO NOTHING;
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'leitung@froebel-muenster.de') THEN
+    INSERT INTO auth.users (
+      id, instance_id, aud, role,
+      email, encrypted_password,
+      email_confirmed_at, created_at, updated_at,
+      raw_app_meta_data, raw_user_meta_data,
+      is_super_admin, confirmation_token, recovery_token,
+      email_change_token_new, email_change
+    ) VALUES (
+      v_leitung_id, v_instance_id, 'authenticated', 'authenticated',
+      'leitung@froebel-muenster.de',
+      crypt('Test1234!', gen_salt('bf')),
+      now(), now(), now(),
+      '{"provider":"email","providers":["email"]}',
+      '{"name":"Testleiterin Weber","role":"fachkraft"}',
+      false, '', '', '', ''
+    );
+  END IF;
 
 
   -- ── 3. Profile mit kita_id + is_leitung befüllen ─────────────────────────
