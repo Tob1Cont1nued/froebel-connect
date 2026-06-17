@@ -217,6 +217,7 @@
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       display: flex; align-items: center; gap: 14px; z-index: 100;
     }
+    .nav-counter { display: none; }
     .nav-btn {
       width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
       font-size: 22px; display: flex; align-items: center; justify-content: center;
@@ -340,6 +341,15 @@
       .dots { gap: 5px; }
       .dot  { width: 6px; height: 6px; }
       .key-hint { display: none; }
+      .slide-footer { display: none; }
+      .nav-counter {
+        display: inline-block;
+        font-size: 11px; font-weight: 600;
+        color: rgba(255,255,255,0.5);
+        background: rgba(255,255,255,0.1);
+        padding: 3px 9px; border-radius: 7px;
+        white-space: nowrap;
+      }
     }
   </style>
 </head>
@@ -742,6 +752,7 @@
 <div class="nav">
   <button class="nav-btn" id="prev" disabled>&#8249;</button>
   <div class="dots" id="dots"></div>
+  <span class="nav-counter" id="nav-counter">1 / 13</span>
   <button class="nav-btn" id="next">&#8250;</button>
 </div>
 <div class="key-hint">← → Pfeiltasten · Leertaste</div>
@@ -790,6 +801,7 @@
     prevBtn.disabled = cur === 0;
     nextBtn.disabled = cur === TOTAL - 1;
     document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    document.getElementById('nav-counter').textContent = (cur + 1) + ' / ' + TOTAL;
   }
 
   prevBtn.addEventListener('click', () => goTo(cur - 1));
