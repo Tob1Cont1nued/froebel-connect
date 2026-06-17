@@ -420,7 +420,8 @@
       .cmp-section-label { font-size: 8.5px; padding: 4px 7px; }
       .cmp-total-label { font-size: 10px; padding: 7px 7px; }
       .cmp-total-kp, .cmp-total-fc { font-size: 12px; padding: 7px 7px; }
-      .cmp-savings { font-size: 11px; padding: 8px 12px; }
+      .cmp-savings { font-size: 10.5px; padding: 8px 10px; }
+      .cmp-savings > div { grid-template-columns: 1fr !important; gap: 6px !important; }
       .feat-item { font-size: 10px; padding: 4px 8px; }
 
       /* ── Navigation ── */
@@ -773,18 +774,36 @@
       <div class="cmp-total-label">5-Jahres-Gesamtkosten (TCO)</div>
       <div class="cmp-total-kp">~ 578.000 €</div>
       <div class="cmp-total-fc">~ 290.000 €</div>
-    </div>
 
-    <div class="cmp-features">
-      <div class="feat-item"><span class="feat-no">✗</span><span class="feat-yes">✓</span> Code-Ownership beim Träger</div>
-      <div class="feat-item"><span class="feat-no">✗</span><span class="feat-yes">✓</span> Barrierefreiheit (WCAG 2.1 AA)</div>
-      <div class="feat-item"><span class="feat-no">✗</span><span class="feat-yes">✓</span> 20–30 Sprachen</div>
-      <div class="feat-item"><span class="feat-no">✗</span><span class="feat-yes">✓</span> Maßgeschneidert erweiterbar</div>
-      <div class="feat-item"><span class="feat-no">✗</span><span class="feat-yes">✓</span> Keine Anbieterbindung</div>
+      <!-- Features: was KiTaPlus nicht kann -->
+      <div class="cmp-section-label">🔍 Was KiTaPlus nicht kann – FRÖBEL.connect schon</div>
+      <div class="cmp-row-label">Code-Ownership</div>
+      <div class="cmp-kp bad">✗&nbsp; Quellcode gehört dem Anbieter</div>
+      <div class="cmp-fc good">✓&nbsp; Quellcode gehört dem Träger</div>
+      <div class="cmp-row-label">Barrierefreiheit</div>
+      <div class="cmp-kp bad">✗&nbsp; Nicht WCAG-konform</div>
+      <div class="cmp-fc good">✓&nbsp; WCAG 2.1 AA – vollständig zugänglich</div>
+      <div class="cmp-row-label">Mehrsprachigkeit</div>
+      <div class="cmp-kp bad">✗&nbsp; Nur Deutsch</div>
+      <div class="cmp-fc good">✓&nbsp; 20–30 Sprachen, automatische Übersetzung</div>
+      <div class="cmp-row-label">Erweiterbarkeit</div>
+      <div class="cmp-kp bad">✗&nbsp; Keine Anpassung möglich</div>
+      <div class="cmp-fc good">✓&nbsp; Vollständig anpassbar nach FRÖBEL-Bedarf</div>
+      <div class="cmp-row-label">Anbieterbindung</div>
+      <div class="cmp-kp bad">✗&nbsp; Vendor Lock-in – kein Ausstieg</div>
+      <div class="cmp-fc good">✓&nbsp; Kein Lock-in – volle Unabhängigkeit</div>
     </div>
 
     <div class="cmp-savings">
-      💡 <strong>Ersparnis über 5 Jahre: ~ 288.000 €</strong> — plus digitale Souveränität, moderne Technologie und Code im Eigentum des Trägers
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;">
+        <div>
+          💰 <strong>~ 288.000 € Ersparnis</strong> über 5 Jahre<br/>
+          <span style="font-size:12px;opacity:0.75;">bei 240 Einrichtungen gegenüber KiTaPlus</span>
+        </div>
+        <div style="font-size:12px;line-height:1.6;">
+          <strong>Zusätzlicher Mehrwert:</strong> Eigener Quellcode · Barrierefreier Zugang für alle Eltern · Mehrsprachig von Anfang an · Keine Abhängigkeit von externem Anbieter
+        </div>
+      </div>
     </div>
   </div>
   <div class="slide-footer"><div class="logo n">FRÖBEL<span class="lc">.connect</span></div><div class="snum">11 / 14</div></div>
