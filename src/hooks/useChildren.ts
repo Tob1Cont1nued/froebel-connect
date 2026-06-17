@@ -29,12 +29,17 @@ export function useChildren() {
         setChildren(
           (data ?? []).map((row) => {
             const c = row.children;
+            const photoUrl: string | null = c.photo_url ?? null;
+            // Preset-Emoji ("preset:🦄") hat Vorrang vor dem emoji-Datenbankfeld
+            const emoji = photoUrl?.startsWith('preset:')
+              ? photoUrl.replace('preset:', '')
+              : (c.emoji ?? '🌻');
             return {
               id: c.id,
               name: c.name,
               age: c.age,
-              emoji: c.emoji ?? '🌻',
-              photo_url: c.photo_url ?? null,
+              emoji,
+              photo_url: photoUrl,
               kita_id: c.kita_id,
               kita_name: c.kitas?.name ?? null,
             };
