@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRÖBEL.connect – App installieren</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #f4f6f8; color: #1A3545; }
+
+    :root {
+      --navy:  #1A3545;
+      --green: #95C11F;
+      --green-dark: #7EA819;
+      --gray:  #f4f6f8;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1A3545 0%, #2D5468 100%);
+      color: white; text-align: center;
+      padding: 40px 24px 36px;
+    }
+    .header-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .header-logo span { color: #95C11F; }
+    .header h1 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .header p  { font-size: 15px; opacity: 0.75; max-width: 500px; margin: 0 auto; line-height: 1.55; }
+
+    /* ── URL Box ── */
+    .url-box {
+      background: white; max-width: 700px; margin: 28px auto 0;
+      border-radius: 16px; padding: 18px 24px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .url-box-icon { font-size: 28px; flex-shrink: 0; }
+    .url-label { font-size: 11px; font-weight: 700; color: #6b7a8a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .url-text  { font-size: 17px; font-weight: 800; color: var(--navy); word-break: break-all; }
+
+    /* ── Sections ── */
+    .section { max-width: 780px; margin: 32px auto; padding: 0 16px; }
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      background: white; border-radius: 18px 18px 0 0;
+      padding: 20px 28px; border-bottom: 2px solid var(--gray);
+    }
+    .section-icon { font-size: 36px; }
+    .section-title { font-size: 20px; font-weight: 800; }
+    .section-sub   { font-size: 13px; color: #6b7a8a; margin-top: 2px; }
+    .section-body  { background: white; border-radius: 0 0 18px 18px; padding: 24px 28px 32px; }
+
+    /* ── Steps ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-top: 4px;
+    }
+    .step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .step-num {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--navy); color: white;
+      font-size: 14px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px; flex-shrink: 0;
+    }
+    .step.highlight .step-num { background: var(--green); }
+    .step-phone { width: 100%; max-width: 130px; }
+    .step-label {
+      font-size: 12px; font-weight: 700; color: var(--navy);
+      margin-top: 10px; line-height: 1.4;
+    }
+    .step-hint {
+      font-size: 10.5px; color: #6b7a8a; margin-top: 4px; line-height: 1.4;
+    }
+
+    /* ── Arrow ── */
+    .arrow {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: var(--green); padding-top: 60px;
+    }
+
+    /* ── Final step ── */
+    .final-box {
+      margin-top: 20px; background: linear-gradient(135deg, #f0ffd0, #e8f7b8);
+      border: 2px solid var(--green); border-radius: 14px;
+      padding: 16px 22px; display: flex; align-items: center; gap: 16px;
+    }
+    .final-box-icon { font-size: 36px; flex-shrink: 0; }
+    .final-box-title { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+    .final-box-text  { font-size: 13px; color: #4a5a30; line-height: 1.5; }
+
+    /* ── Tip box ── */
+    .tip-box {
+      max-width: 780px; margin: 16px auto 40px; padding: 0 16px;
+    }
+    .tip-inner {
+      background: white; border-radius: 14px; padding: 18px 24px;
+      display: flex; align-items: flex-start; gap: 14px;
+      border-left: 4px solid var(--navy);
+    }
+    .tip-icon { font-size: 24px; flex-shrink: 0; }
+    .tip-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .tip-text  { font-size: 13px; color: #6b7a8a; line-height: 1.6; }
+
+    /* ── Phone SVG shared styles ── */
+    .phone-body   { fill: #1A3545; }
+    .phone-screen { fill: white; }
+    .phone-sb     { fill: #f0f4f8; }   /* status bar */
+    .phone-addr   { fill: #e8edf2; }   /* address bar */
+    .phone-addr-t { fill: #1A3545; font-size: 7px; font-weight: 600; font-family: Inter, sans-serif; }
+    .phone-btn    { fill: #95C11F; }
+    .phone-text   { fill: #1A3545; font-family: Inter, sans-serif; }
+    .phone-muted  { fill: #6b7a8a; font-family: Inter, sans-serif; }
+    .highlight-ring { fill: none; stroke: #e53935; stroke-width: 3; }
+    .tap-indicator { fill: rgba(229,57,53,0.2); stroke: #e53935; stroke-width: 2; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .steps { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .arrow { display: none; }
+      .section-body { padding: 18px 16px 24px; }
+      .section-header { padding: 16px 20px; }
+      .header { padding: 28px 16px 24px; }
+      .header h1 { font-size: 19px; }
+      .url-box { flex-direction: column; text-align: center; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-logo">FRÖBEL<span>.connect</span></div>
+  <h1>📱 App auf dein Handy installieren</h1>
+  <p>Folge diesen einfachen Schritten – danach hast du FRÖBEL.connect direkt auf deinem Homescreen, genau wie eine richtige App.</p>
+  <div class="url-box">
+    <div class="url-box-icon">🌐</div>
+    <div>
+      <div class="url-label">Adresse im Browser aufrufen</div>
+      <div class="url-text">froebel-connect-1tq4.vercel.app</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ANDROID ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🤖</div>
+    <div>
+      <div class="section-title">Android-Handy</div>
+      <div class="section-sub">Mit dem Chrome-Browser (vorinstalliert auf fast allen Android-Handys)</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="steps">
+
+      <!-- Schritt 1 -->
+      <div class="step">
+        <div class="step-num">1</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- Chrome icon centered -->
+          <circle cx="65" cy="112" r="30" fill="#4285F4"/>
+          <circle cx="65" cy="112" r="20" fill="white"/>
+          <path d="M65 92 A20 20 0 0 1 82 102 L65 112 Z" fill="#EA4335"/>
+          <path d="M65 92 A20 20 0 0 0 48 102 L65 112 Z" fill="#FBBC04"/>
+          <path d="M48 102 A20 20 0 0 0 65 132 L65 112 Z" fill="#34A853"/>
+          <circle cx="65" cy="112" r="10" fill="white"/>
+          <circle cx="65" cy="112" r="8" fill="#4285F4"/>
+          <text x="65" y="158" text-anchor="middle" font-size="9" font-weight="700" fill="#1A3545" font-family="Inter,sans-serif">Chrome öffnen</text>
+        </svg>
+        <div class="step-label">Chrome öffnen</div>
+        <div class="step-hint">Das blaue Kreis-Symbol</div>
+      </div>
+
+      <!-- Schritt 2 -->
+      <div class="step">
+        <div class="step-num">2</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- Status bar -->
+          <rect x="10" y="20" width="110" height="14" fill="#f0f4f8"/>
+          <!-- Address bar -->
+          <rect x="15" y="38" width="100" height="18" rx="9" fill="#e8edf2"/>
+          <text x="65" y="50.5" text-anchor="middle" font-size="6.5" fill="#1A3545" font-family="monospace" font-weight="600">froebel-connect-1tq4.vercel.app</text>
+          <!-- Keyboard suggestion -->
+          <rect x="10" y="175" width="110" height="40" fill="#e8edf2"/>
+          <text x="65" y="198" text-anchor="middle" font-size="8" fill="#1A3545" font-family="Inter,sans-serif">froebel-connect-1tq4...</text>
+          <!-- Arrow key -->
+          <rect x="15" y="62" width="100" height="108" fill="#f8f9fa"/>
+          <text x="65" y="118" text-anchor="middle" font-size="8" fill="#6b7a8a" font-family="Inter,sans-serif">Adresse eingeben</text>
+          <text x="65" y="130" text-anchor="middle" font-size="7" fill="#6b7a8a" font-family="Inter,sans-serif">→ Enter tippen</text>
+        </svg>
+        <div class="step-label">Adresse eintippen</div>
+        <div class="step-hint">Oben in die Adresszeile, dann Enter</div>
+      </div>
+
+      <!-- Schritt 3 -->
+      <div class="step highlight">
+        <div class="step-num">3</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- Status bar -->
+          <rect x="10" y="20" width="110" height="14" fill="#f0f4f8"/>
+          <!-- Address bar -->
+          <rect x="15" y="38" width="80" height="16" rx="8" fill="#e8edf2"/>
+          <text x="55" y="49" text-anchor="middle" font-size="5.5" fill="#1A3545" font-family="monospace">froebel-connect-1tq4...</text>
+          <!-- Three dots menu -->
+          <circle cx="111" cy="46" r="2.5" fill="#555"/>
+          <circle cx="111" cy="52" r="2.5" fill="#555"/>
+          <circle cx="111" cy="58" r="2.5" fill="#555"/>
+          <!-- Red highlight ring around three dots -->
+          <circle cx="111" cy="52" r="12" fill="rgba(229,57,53,0.15)" stroke="#e53935" stroke-width="2.5"/>
+          <!-- Tap ripple -->
+          <circle cx="111" cy="52" r="18" fill="rgba(229,57,53,0.08)"/>
+          <!-- Arrow pointing to dots -->
+          <text x="75" y="54" text-anchor="end" font-size="9" fill="#e53935" font-family="Inter,sans-serif" font-weight="700">hier!</text>
+          <line x1="77" y1="52" x2="93" y2="50" stroke="#e53935" stroke-width="2" marker-end="url(#arr)"/>
+          <!-- App content -->
+          <rect x="15" y="75" width="100" height="130" fill="#f8f9fa" rx="4"/>
+          <text x="65" y="142" text-anchor="middle" font-size="8" fill="#6b7a8a" font-family="Inter,sans-serif">FRÖBEL.connect</text>
+        </svg>
+        <div class="step-label">Drei Punkte ⋮ antippen</div>
+        <div class="step-hint">Oben rechts im Browser</div>
+      </div>
+
+      <!-- Schritt 4 -->
+      <div class="step highlight">
+        <div class="step-num">4</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- Status bar -->
+          <rect x="10" y="20" width="110" height="14" fill="#f0f4f8"/>
+          <!-- Dropdown menu -->
+          <rect x="50" y="34" width="72" height="110" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+          <rect x="55" y="42" width="60" height="13" rx="3" fill="#f5f5f5"/>
+          <text x="85" y="52" text-anchor="middle" font-size="6.5" fill="#555" font-family="Inter,sans-serif">Neuer Tab</text>
+          <rect x="55" y="58" width="60" height="13" rx="3" fill="#f5f5f5"/>
+          <text x="85" y="68" text-anchor="middle" font-size="6.5" fill="#555" font-family="Inter,sans-serif">Verlauf</text>
+          <!-- App installieren highlighted -->
+          <rect x="53" y="74" width="64" height="16" rx="4" fill="#95C11F"/>
+          <text x="85" y="85.5" text-anchor="middle" font-size="7" fill="white" font-family="Inter,sans-serif" font-weight="700">App installieren</text>
+          <!-- Red ring -->
+          <rect x="51" y="72" width="68" height="20" rx="5" fill="none" stroke="#e53935" stroke-width="2"/>
+          <rect x="55" y="94" width="60" height="13" rx="3" fill="#f5f5f5"/>
+          <text x="85" y="104" text-anchor="middle" font-size="6.5" fill="#555" font-family="Inter,sans-serif">Einstellungen</text>
+          <!-- Arrow -->
+          <text x="40" y="84" text-anchor="end" font-size="9" fill="#e53935" font-family="Inter,sans-serif" font-weight="700">hier!</text>
+        </svg>
+        <div class="step-label">„App installieren" antippen</div>
+        <div class="step-hint">Im Menü nach unten schauen</div>
+      </div>
+
+      <!-- Schritt 5 -->
+      <div class="step highlight">
+        <div class="step-num">5</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- App content dimmed -->
+          <rect x="10" y="34" width="110" height="181" fill="#f8f9fa"/>
+          <!-- Install dialog -->
+          <rect x="15" y="80" width="100" height="90" rx="10" fill="white" stroke="#ddd" stroke-width="1"/>
+          <!-- App icon in dialog -->
+          <rect x="50" y="90" width="30" height="30" rx="8" fill="#1A3545"/>
+          <circle cx="72" cy="98" r="7" fill="#95C11F"/>
+          <rect x="56" y="95" width="8" height="18" rx="2" fill="white"/>
+          <rect x="56" y="95" width="18" height="8" rx="2" fill="white"/>
+          <rect x="56" y="108" width="13" height="5" rx="2" fill="white"/>
+          <text x="65" y="130" text-anchor="middle" font-size="7" fill="#1A3545" font-family="Inter,sans-serif" font-weight="700">FRÖBEL.connect</text>
+          <text x="65" y="140" text-anchor="middle" font-size="6" fill="#6b7a8a" font-family="Inter,sans-serif">Zum Startbildschirm hinzuf.</text>
+          <!-- Install button highlighted -->
+          <rect x="20" y="152" width="90" height="14" rx="7" fill="#95C11F"/>
+          <text x="65" y="162" text-anchor="middle" font-size="7" fill="white" font-family="Inter,sans-serif" font-weight="800">Installieren</text>
+          <!-- Red ring -->
+          <rect x="18" y="150" width="94" height="18" rx="8" fill="none" stroke="#e53935" stroke-width="2"/>
+        </svg>
+        <div class="step-label">„Installieren" bestätigen</div>
+        <div class="step-hint">Den grünen Button antippen</div>
+      </div>
+
+    </div><!-- /steps -->
+
+    <!-- Fertig -->
+    <div class="final-box">
+      <div class="final-box-icon">🎉</div>
+      <div>
+        <div class="final-box-title">Fertig! Die App ist jetzt auf deinem Homescreen.</div>
+        <div class="final-box-text">Suche das FRÖBEL.connect-Icon auf deinem Startbildschirm und öffne es – sie startet jetzt wie eine echte App, ganz ohne Browser.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ IPHONE ═══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🍎</div>
+    <div>
+      <div class="section-title">iPhone oder iPad</div>
+      <div class="section-sub">Mit dem Safari-Browser (vorinstalliert, mit dem Kompass-Symbol)</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="steps">
+
+      <!-- Schritt 1 -->
+      <div class="step">
+        <div class="step-num">1</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <circle cx="65" cy="12" r="4" fill="#2D5468"/>
+          <!-- Dynamic island -->
+          <rect x="44" y="22" width="42" height="10" rx="5" fill="#1A3545"/>
+          <!-- Safari icon -->
+          <circle cx="65" cy="112" r="32" fill="#006CEC"/>
+          <circle cx="65" cy="112" r="28" fill="white"/>
+          <line x1="65" y1="84" x2="65" y2="140" stroke="#ccc" stroke-width="1"/>
+          <line x1="37" y1="112" x2="93" y2="112" stroke="#ccc" stroke-width="1"/>
+          <!-- Compass needle -->
+          <polygon points="65,88 68,112 65,108 62,112" fill="#e53935"/>
+          <polygon points="65,136 68,112 65,116 62,112" fill="#999"/>
+          <circle cx="65" cy="112" r="5" fill="white"/>
+          <text x="65" y="158" text-anchor="middle" font-size="9" font-weight="700" fill="#1A3545" font-family="Inter,sans-serif">Safari öffnen</text>
+        </svg>
+        <div class="step-label">Safari öffnen</div>
+        <div class="step-hint">Das Kompass-Symbol</div>
+      </div>
+
+      <!-- Schritt 2 -->
+      <div class="step">
+        <div class="step-num">2</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <!-- Dynamic island -->
+          <rect x="44" y="22" width="42" height="10" rx="5" fill="#1A3545"/>
+          <!-- Safari chrome at bottom -->
+          <rect x="10" y="190" width="110" height="25" fill="#f0f4f8"/>
+          <!-- Address bar at bottom -->
+          <rect x="20" y="194" width="90" height="16" rx="8" fill="e8edf2"/>
+          <rect x="20" y="194" width="90" height="16" rx="8" fill="#e8edf2"/>
+          <text x="65" y="205" text-anchor="middle" font-size="5.5" fill="#1A3545" font-family="monospace">froebel-connect-1tq4.vercel.app</text>
+          <!-- Content -->
+          <rect x="15" y="34" width="100" height="152" fill="#f8f9fa" rx="4"/>
+          <text x="65" y="116" text-anchor="middle" font-size="8" fill="#6b7a8a" font-family="Inter,sans-serif">Adresse eintippen</text>
+          <text x="65" y="128" text-anchor="middle" font-size="7" fill="#6b7a8a" font-family="Inter,sans-serif">→ „Öffnen" tippen</text>
+          <!-- Arrow pointing down to address bar -->
+          <line x1="65" y1="138" x2="65" y2="186" stroke="#e53935" stroke-width="2" stroke-dasharray="4,3"/>
+          <polygon points="65,192 61,183 69,183" fill="#e53935"/>
+        </svg>
+        <div class="step-label">Adresse eintippen</div>
+        <div class="step-hint">Unten in die Adressleiste</div>
+      </div>
+
+      <!-- Schritt 3 -->
+      <div class="step highlight">
+        <div class="step-num">3</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <rect x="44" y="22" width="42" height="10" rx="5" fill="#1A3545"/>
+          <!-- App content -->
+          <rect x="15" y="34" width="100" height="152" fill="#f8f9fa" rx="4"/>
+          <text x="65" y="116" text-anchor="middle" font-size="8" fill="#6b7a8a" font-family="Inter,sans-serif">FRÖBEL.connect</text>
+          <!-- Safari bottom bar -->
+          <rect x="10" y="186" width="110" height="29" fill="#f0f4f8"/>
+          <!-- Back/Forward -->
+          <text x="24" y="205" text-anchor="middle" font-size="14" fill="#aaa">‹</text>
+          <text x="40" y="205" text-anchor="middle" font-size="14" fill="#aaa">›</text>
+          <!-- Share button highlighted (center bottom) -->
+          <rect x="56" y="192" width="18" height="18" rx="3" fill="none"/>
+          <!-- Share icon -->
+          <rect x="61" y="198" width="8" height="8" rx="1.5" fill="none" stroke="#006CEC" stroke-width="1.8"/>
+          <line x1="65" y1="198" x2="65" y2="192" stroke="#006CEC" stroke-width="1.8"/>
+          <polyline points="62,194 65,191 68,194" fill="none" stroke="#006CEC" stroke-width="1.8"/>
+          <!-- Red highlight -->
+          <circle cx="65" cy="200" r="13" fill="rgba(229,57,53,0.12)" stroke="#e53935" stroke-width="2"/>
+          <!-- Arrow + label -->
+          <text x="65" y="170" text-anchor="middle" font-size="8" fill="#e53935" font-family="Inter,sans-serif" font-weight="700">hier tippen!</text>
+          <line x1="65" y1="172" x2="65" y2="185" stroke="#e53935" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <polygon points="65,188 62,182 68,182" fill="#e53935"/>
+          <!-- Tabs / bookmark icons -->
+          <text x="90" y="205" text-anchor="middle" font-size="11" fill="#aaa">⎕</text>
+          <text x="107" y="205" text-anchor="middle" font-size="11" fill="#aaa">☰</text>
+        </svg>
+        <div class="step-label">Teilen-Symbol antippen</div>
+        <div class="step-hint">Das Symbol unten in der Mitte (Quadrat mit Pfeil nach oben)</div>
+      </div>
+
+      <!-- Schritt 4 -->
+      <div class="step highlight">
+        <div class="step-num">4</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <rect x="44" y="22" width="42" height="10" rx="5" fill="#1A3545"/>
+          <!-- Share sheet from bottom -->
+          <rect x="8" y="110" width="114" height="107" rx="16" fill="white" stroke="#ddd" stroke-width="1"/>
+          <!-- Handle -->
+          <rect x="52" y="116" width="26" height="4" rx="2" fill="#ccc"/>
+          <!-- Share icons row -->
+          <rect x="16" y="125" width="22" height="22" rx="8" fill="#e8edf2"/>
+          <rect x="42" y="125" width="22" height="22" rx="8" fill="#e8edf2"/>
+          <rect x="68" y="125" width="22" height="22" rx="8" fill="#e8edf2"/>
+          <rect x="94" y="125" width="22" height="22" rx="8" fill="#e8edf2"/>
+          <text x="27" y="141" text-anchor="middle" font-size="12">📋</text>
+          <text x="53" y="141" text-anchor="middle" font-size="12">📨</text>
+          <text x="79" y="141" text-anchor="middle" font-size="12">💬</text>
+          <text x="105" y="141" text-anchor="middle" font-size="12">✉️</text>
+          <!-- Separator -->
+          <line x1="14" y1="153" x2="116" y2="153" stroke="#eee" stroke-width="1"/>
+          <!-- Menu items -->
+          <text x="24" y="167" font-size="11" fill="#1A3545" font-family="Inter,sans-serif">📑  Lesezeichen hinzufügen</text>
+          <line x1="14" y1="173" x2="116" y2="173" stroke="#eee" stroke-width="1"/>
+          <!-- "Zum Home-Bildschirm" highlighted -->
+          <rect x="12" y="175" width="106" height="18" rx="5" fill="rgba(149,193,31,0.15)" stroke="#95C11F" stroke-width="1.5"/>
+          <text x="24" y="187" font-size="10" fill="#1A3545" font-family="Inter,sans-serif" font-weight="700">🏠  Zum Home-Bildschirm</text>
+          <!-- Red ring -->
+          <rect x="10" y="173" width="110" height="22" rx="6" fill="none" stroke="#e53935" stroke-width="2"/>
+          <text x="65" y="210" text-anchor="middle" font-size="7.5" fill="#e53935" font-family="Inter,sans-serif" font-weight="700">← hier tippen!</text>
+        </svg>
+        <div class="step-label">„Zum Home-Bildschirm" wählen</div>
+        <div class="step-hint">Im Menü nach unten scrollen</div>
+      </div>
+
+      <!-- Schritt 5 -->
+      <div class="step highlight">
+        <div class="step-num">5</div>
+        <svg class="step-phone" viewBox="0 0 130 230" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="124" height="224" rx="18" fill="#1A3545"/>
+          <rect x="10" y="20" width="110" height="195" fill="white"/>
+          <rect x="44" y="22" width="42" height="10" rx="5" fill="#1A3545"/>
+          <!-- Top nav bar of confirmation -->
+          <rect x="10" y="20" width="110" height="25" fill="#f0f4f8"/>
+          <text x="20" y="36" font-size="9" fill="#006CEC" font-family="Inter,sans-serif">Abbrechen</text>
+          <text x="65" y="36" text-anchor="middle" font-size="9" fill="#1A3545" font-family="Inter,sans-serif" font-weight="700">Zum Home-Bildschirm</text>
+          <!-- Hinzufügen highlighted top right -->
+          <rect x="88" y="28" width="32" height="14" rx="4" fill="#95C11F"/>
+          <text x="104" y="38.5" text-anchor="middle" font-size="7.5" fill="white" font-family="Inter,sans-serif" font-weight="800">Hinzuf.</text>
+          <rect x="86" y="26" width="36" height="18" rx="5" fill="none" stroke="#e53935" stroke-width="2"/>
+          <!-- App icon preview -->
+          <rect x="43" y="58" width="44" height="44" rx="12" fill="#1A3545"/>
+          <circle cx="74" cy="68" r="11" fill="#95C11F"/>
+          <rect x="49" y="64" width="12" height="26" rx="3" fill="white"/>
+          <rect x="49" y="64" width="26" height="12" rx="3" fill="white"/>
+          <rect x="49" y="80" width="20" height="8" rx="2" fill="white"/>
+          <text x="65" y="118" text-anchor="middle" font-size="8" fill="#1A3545" font-family="Inter,sans-serif" font-weight="700">FRÖBEL.connect</text>
+          <text x="65" y="130" text-anchor="middle" font-size="7" fill="#6b7a8a" font-family="Inter,sans-serif">froebel-connect-1tq4...</text>
+          <!-- Arrow pointing to Hinzufügen -->
+          <text x="65" y="155" text-anchor="middle" font-size="8" fill="#e53935" font-family="Inter,sans-serif" font-weight="700">hier tippen!</text>
+          <line x1="88" y1="148" x2="96" y2="42" stroke="#e53935" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <polygon points="97,39 93,46 100,44" fill="#e53935"/>
+        </svg>
+        <div class="step-label">„Hinzufügen" antippen</div>
+        <div class="step-hint">Oben rechts auf dem Bildschirm</div>
+      </div>
+
+    </div><!-- /steps -->
+
+    <!-- Fertig -->
+    <div class="final-box">
+      <div class="final-box-icon">🎉</div>
+      <div>
+        <div class="final-box-title">Fertig! Die App ist jetzt auf deinem Homescreen.</div>
+        <div class="final-box-text">Das FRÖBEL.connect-Icon erscheint jetzt auf deinem iPhone-Startbildschirm. Tippe drauf – die App öffnet sich wie eine echte App, ganz ohne Safari-Leiste.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tip ── -->
+<div class="tip-box">
+  <div class="tip-inner">
+    <div class="tip-icon">💡</div>
+    <div>
+      <div class="tip-title">Tipp: Beim ersten Öffnen einloggen</div>
+      <div class="tip-text">
+        Du bekommst deine persönlichen Zugangsdaten (E-Mail und Passwort) von der Kita-Leitung.<br/>
+        Danach bleibst du dauerhaft eingeloggt – du musst dich nicht jedes Mal neu anmelden.
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
