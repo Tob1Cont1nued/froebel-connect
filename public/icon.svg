@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1A3545"/>
+  <!-- F — vertical stroke -->
+  <rect x="122" y="104" width="70" height="308" rx="14" fill="white"/>
+  <!-- F — top horizontal bar -->
+  <rect x="122" y="104" width="248" height="70" rx="14" fill="white"/>
+  <!-- F — middle horizontal bar -->
+  <rect x="122" y="232" width="190" height="58" rx="14" fill="white"/>
+  <!-- .connect green accent dot -->
+  <circle cx="406" cy="140" r="58" fill="#95C11F"/>
+  <!-- small white shine on dot -->
+  <circle cx="388" cy="120" r="18" fill="rgba(255,255,255,0.25)"/>
+</svg>
